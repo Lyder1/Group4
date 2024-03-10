@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "Group4_3DGame",
+			"Path": "..\\Source\\Group4_3DGame.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "Group4_3DGameEditor",
+			"Path": "..\\Source\\Group4_3DGameEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

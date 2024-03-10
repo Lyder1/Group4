@@ -1,0 +1,14 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\edvar\\documents\\github\\group4\\group4_3dgame\\source\\group4_3dgame\\group4_3dgame.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\edvar\\documents\\github\\group4\\group4_3dgame\\intermediate\\build\\win64\\x64\\group4_3dgameeditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\edvar\\documents\\github\\group4\\group4_3dgame\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\group4_3dgame\\definitions.group4_3dgame.h",
+            "c:\\users\\edvar\\documents\\github\\group4\\group4_3dgame\\source\\group4_3dgame\\group4_3dgame.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
