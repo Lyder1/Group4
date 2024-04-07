@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "MyArcher.generated.h"
 
+struct FInputActionValue;
+
 UCLASS()
 class G4_3DGAME_API AMyArcher : public ACharacter
 {
@@ -37,6 +39,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	class UInputAction* JumpAction;
+
+	void Move(const FInputActionValue& Value);
+
+	void LookAround(const FInputActionValue& Value);
 
 protected:
 	// Called when the game starts or when spawned
