@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Arrow.h"
 #include "MyArcher.generated.h"
 
 struct FInputActionValue;
@@ -17,16 +18,33 @@ public:
 	// Sets default values for this character's properties
 	AMyArcher();
 
+
+	// COMPONENTS
+
+
+	// Archer spring arm, to allow for third person perspective
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class USpringArmComponent* ArcherSpringArm;
 
+	// Archer Camera
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UCameraComponent* ArcherCamera;
 
+	//Archer Mesh
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	USkeletalMeshComponent* ArcherMesh;
 
-	// Input Actions and IMC
+	// Origin offset for where arrow will spawn
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	FVector ArrowOrigin;
+
+	// Which class projectile to spawn
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	TSubclassOf<class AArrow> ProjectileClass;
+
+
+	// INPUT ACTIONS AND IMC
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	class UInputMappingContext* IMC;
@@ -40,9 +58,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	class UInputAction* JumpAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	class UInputAction* FireAction;
+
+
+	// FUNCTIONS
+
+
 	void Move(const FInputActionValue& Value);
 
 	void LookAround(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void FireArrow();
 
 protected:
 	// Called when the game starts or when spawned
