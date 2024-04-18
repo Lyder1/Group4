@@ -47,8 +47,7 @@ void AMyEnemy::Tick(float DeltaTime)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("YourVariable: %d"), Detected));
 
 	StartLocation = GetActorLocation();
-	PlayerLocation = GetWorld()->GetFirstPlayerController()->GetCharacter()->GetActorLocation();
-	Direction = PlayerLocation - StartLocation;
+	Direction = GetWorld()->GetFirstPlayerController()->GetCharacter()->GetActorLocation() - StartLocation;
 	TotalDistance = Direction.Size();
 
 	Direction = Direction.GetSafeNormal();
