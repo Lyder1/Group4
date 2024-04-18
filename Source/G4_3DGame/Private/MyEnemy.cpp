@@ -51,20 +51,27 @@ void AMyEnemy::Tick(float DeltaTime)
 	Direction = PlayerLocation - StartLocation;
 	TotalDistance = Direction.Size();
 
-	Direction = Direction.GetSafeNormal();
-	CurrentDistance = 0.0f;
+	Direction.Normalize();
 
-	if (Detected) {
-		if (CurrentDistance < TotalDistance) {
-			FVector Location = GetActorLocation();
-			Location += Direction * Speed * DeltaTime;
-			SetActorLocation(Location);
-			CurrentDistance = (Location - StartLocation).Size();
+	if (Detected && CurrentDistance < TotalDistance) {
+		FVector NewLocation = GetActorLocation() + Direction * Speed * DeltaTime;
+		CurrentDistance = (NewLocation - StartLocation).Size();
 
-			FRotator NewRotation = Direction.Rotation();
-			SetActorRotation(NewRotation - FRotator(0.0f, 90.0f, 0.0f));
+		//Line trace to check for ground bellow
+		FVector DownVector = FVector(0.0f, 0.0f, -1.0f);
+		FHitResult Hit;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+		FVector EndLocation = NewLocation + DownVector * MaxGroundCheckDistance;
 
+		if (GetWorld()->LineTraceSingleByChannel(Hit, NewLocation, EndLocation, ECC_WorldStatic, Params)){
+			NewLocation = Hit.ImpactPoint;
 		}
+		SetActorLocation(NewLocation);
+
+		FRotator TargetRotation = (PlayerLocation - NewLocation).Rotation() ;
+		FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, RotationInterpSpeed);
+		SetActorRotation(NewRotation);
 	}
 }
 

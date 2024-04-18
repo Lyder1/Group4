@@ -18,6 +18,9 @@ public:
 	AMyEnemy();
 
 protected:
+	float MaxGroundCheckDistance = 50.0f;
+	float RotationInterpSpeed = 5.0f;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	class USceneComponent* RootScene;
 
@@ -32,14 +35,13 @@ protected:
 
 	UFUNCTION()
 	void OnDetection(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
-	//void HandleDetection(AActor* DetectedActor);
 
 
 	FVector Direction;
 
 	float TotalDistance;
-	float CurrentDistance;
+	float CurrentDistance = 0.0f;
+	FVector PlayerLocation;
 	FVector StartLocation;
 
 	bool Detected = false;
