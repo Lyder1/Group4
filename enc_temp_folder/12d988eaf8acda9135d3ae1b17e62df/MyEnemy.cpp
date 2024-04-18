@@ -106,7 +106,6 @@ void AMyEnemy::Tick(float DeltaTime)
 		SetActorRotation(FRotator(0.0f, TargetRotation.Yaw, 0.0f));
 	}
 	if (!Detected && !EnemyIsHome && HomeCurrentDistance < HomeTotalDistance) {
-
 		FVector NewLocation = GetActorLocation() + HomeDirection * Speed * DeltaTime;
 		HomeCurrentDistance = (NewLocation - StartLocation).Size();
 
