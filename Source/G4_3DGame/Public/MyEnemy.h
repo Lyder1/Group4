@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "MyArcher.h"
+#include "TimerManager.h"
 #include "MyEnemy.generated.h"
 
 
@@ -20,6 +21,12 @@ public:
 protected:
 	float MaxGroundCheckDistance = 50.0f;
 	float RotationInterpSpeed = 5.0f;
+	float TotalDistance;
+	float CurrentDistance = 0.0f;
+	FVector Direction;
+	FVector PlayerLocation;
+	FVector StartLocation;
+	bool Detected = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	class USceneComponent* RootScene;
@@ -34,17 +41,10 @@ protected:
 	class USphereComponent* DetectionArea;
 
 	UFUNCTION()
-	void OnDetection(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-
-	FVector Direction;
-
-	float TotalDistance;
-	float CurrentDistance = 0.0f;
-	FVector PlayerLocation;
-	FVector StartLocation;
-
-	bool Detected = false;
+	UFUNCTION()
+	void OnDetectionEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 
 	// Called when the game starts or when spawned

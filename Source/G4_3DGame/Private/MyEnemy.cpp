@@ -2,6 +2,7 @@
 
 
 #include "MyEnemy.h"
+#include "TimerManager.h"
 #include "Components/SphereComponent.h"
 
 // Sets default values
@@ -11,25 +12,34 @@ AMyEnemy::AMyEnemy()
 	RootComponent = RootScene;
 
 	DetectionArea = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionArea"));
-	DetectionArea->InitSphereRadius(900.0f);
+	DetectionArea->SetSphereRadius(900.0f);
 	DetectionArea->SetupAttachment(RootComponent);
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	Mesh->SetupAttachment(RootComponent);
 
-	DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::OnDetection);
+	DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::OnDetectionBegin);
+	DetectionArea->OnComponentEndOverlap.AddDynamic(this, &AMyEnemy::OnDetectionEnd);
 
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
-void AMyEnemy::OnDetection(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+
+
+void AMyEnemy::OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Detected = true;
+	DetectionArea->SetSphereRadius(1750.0f);
+	Detected = true;	
 }
 
 
+void AMyEnemy::OnDetectionEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{	
+		DetectionArea->SetSphereRadius(900.0f);
+		Detected = false;
+}
 
 
 
@@ -44,7 +54,6 @@ void AMyEnemy::BeginPlay()
 void AMyEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("YourVariable: %d"), Detected));
 
 	StartLocation = GetActorLocation();
 	PlayerLocation = GetWorld()->GetFirstPlayerController()->GetCharacter()->GetActorLocation();
@@ -68,10 +77,6 @@ void AMyEnemy::Tick(float DeltaTime)
 			NewLocation = Hit.ImpactPoint;
 		}
 		SetActorLocation(NewLocation);
-
-		//FRotator TargetRotation = (PlayerLocation - NewLocation).Rotation() ;
-		//FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, RotationInterpSpeed);
-		//SetActorRotation(NewRotation);
 
 		FRotator TargetRotation = (PlayerLocation - NewLocation).Rotation() - FRotator(0.0f, 90.0f, 0.0f);
 		SetActorRotation(FRotator(0.0f, TargetRotation.Yaw, 0.0f));
