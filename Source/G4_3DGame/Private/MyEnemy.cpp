@@ -11,11 +11,11 @@ AMyEnemy::AMyEnemy()
 	RootComponent = RootScene;
 
 	DetectionArea = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionArea"));
-	DetectionArea->InitSphereRadius(500.0f);
+	DetectionArea->InitSphereRadius(900.0f);
 	DetectionArea->SetupAttachment(RootComponent);
 
-	//Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
-	//Mesh->SetupAttachment(RootComponent);
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
+	Mesh->SetupAttachment(RootComponent);
 
 	DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::OnDetection);
 
@@ -69,9 +69,12 @@ void AMyEnemy::Tick(float DeltaTime)
 		}
 		SetActorLocation(NewLocation);
 
-		FRotator TargetRotation = (PlayerLocation - NewLocation).Rotation() ;
-		FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, RotationInterpSpeed);
-		SetActorRotation(NewRotation);
+		//FRotator TargetRotation = (PlayerLocation - NewLocation).Rotation() ;
+		//FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, RotationInterpSpeed);
+		//SetActorRotation(NewRotation);
+
+		FRotator TargetRotation = (PlayerLocation - NewLocation).Rotation() - FRotator(0.0f, 90.0f, 0.0f);
+		SetActorRotation(FRotator(0.0f, TargetRotation.Yaw, 0.0f));
 	}
 }
 
