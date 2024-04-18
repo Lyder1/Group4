@@ -19,14 +19,24 @@ public:
 	AMyEnemy();
 
 protected:
+	FTimerHandle DelayTimerHandle;
+
 	float MaxGroundCheckDistance = 50.0f;
-	float RotationInterpSpeed = 5.0f;
 	float TotalDistance;
 	float CurrentDistance = 0.0f;
+	float HomeTotalDistance;
+	float HomeCurrentDistance = 0.0f;
 	FVector Direction;
 	FVector PlayerLocation;
 	FVector StartLocation;
+	FVector HomeDirection;
+	FVector HomeLocation;
+	FVector CurrentLocation;
+	FRotator HomeRotation;
 	bool Detected = false;
+	bool Escaping = false;
+	bool EnemyIsHome;
+	bool DelayedRotation = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	class USceneComponent* RootScene;
@@ -46,6 +56,8 @@ protected:
 	UFUNCTION()
 	void OnDetectionEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UFUNCTION()
+	void DetectionEndReaction();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
