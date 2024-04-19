@@ -24,7 +24,7 @@ AMyArcher::AMyArcher()
 	ArcherSpringArm->bUsePawnControlRotation = true;
 	ArcherSpringArm->bEnableCameraLag = true;
 	ArcherSpringArm->TargetArmLength = 300.0f;
-	//ArcherSpringArm->TargetOffset = 
+	ArcherSpringArm->SocketOffset.Set(0, 70.0f, 50.0f);
 
 }
 
@@ -60,14 +60,14 @@ void AMyArcher::FireArrow()
 		GetActorEyesViewPoint(CameraLocation, CameraRotation);
 
 		// Set ArrowOrigin to spawn projectiles slightly in front of the camera.
-		ArrowOrigin.Set(100.0f, 0.0f, 0.0f);
+		ArrowOrigin.Set(100.0f, 0.0f, -50.0f);
 
 		// Transform MuzzleOffset from camera space to world space.
 		FVector OriginLocation = CameraLocation + FTransform(CameraRotation).TransformVector(ArrowOrigin);
 
 		// Skew the aim to be slightly upwards.
 		FRotator OriginRotation = CameraRotation;
-		OriginRotation.Pitch += 10.0f;
+		OriginRotation.Pitch += 3.0f;
 
 		UWorld* World = GetWorld();
 		if (World)

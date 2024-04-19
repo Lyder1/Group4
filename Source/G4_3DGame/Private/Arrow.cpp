@@ -43,6 +43,9 @@ AArrow::AArrow()
 		ArrowMesh->SetupAttachment(CollisionComponent);
 	}
 
+	//lifespan of arrow after being fired
+	InitialLifeSpan = 3.0f;
+
 	/*if (!NewArrowMesh) {
 		NewArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow Mesh"));
 		NewArrowMesh->SetupAttachment(ArrowMesh);
