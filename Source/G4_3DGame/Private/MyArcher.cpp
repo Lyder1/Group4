@@ -8,6 +8,8 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "MySaveGame.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMyArcher::AMyArcher()
@@ -26,6 +28,8 @@ AMyArcher::AMyArcher()
 	ArcherSpringArm->TargetArmLength = 300.0f;
 	ArcherSpringArm->SocketOffset.Set(0, 70.0f, 50.0f);
 
+	saveObj = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
+	LoadObj = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
 }
 
 void AMyArcher::Move(const FInputActionValue& Value)
@@ -47,6 +51,42 @@ void AMyArcher::LookAround(const FInputActionValue& Value)
 		AddControllerYawInput(LookAroundVector.X);
 		AddControllerPitchInput(LookAroundVector.Y);
 	}
+}
+
+void AMyArcher::InputLoad(const FInputActionValue& Value)
+{
+	const bool LoadVal = Value.Get<bool>();
+
+	LoadObj = UGameplayStatics::LoadGameFromSlot(TEXT("Slot1"), 0);
+	//saveObj = Cast<UMainSaveGame>(LoadObj);
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("load a saved game."));
+
+	if (!LoadObj)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Create it "));
+
+		saveObj = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
+		const bool IsSaved = UGameplayStatics::SaveGameToSlot(saveObj, TEXT("Slot1"), 0);
+
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT(" Loaded."));
+	}
+
+	SetActorLocation(saveObj->PlayerLocation);
+	SetActorRotation(saveObj->PlayerRotation);
+}
+
+void AMyArcher::SaveGame()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Saved "));
+	saveObj = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
+	saveObj->PlayerLocation = GetActorLocation();
+	saveObj->PlayerRotation = GetActorRotation();
+	UGameplayStatics::SaveGameToSlot(saveObj, TEXT("Slot1"), 0);
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Data saved ... "));
 }
 
 void AMyArcher::FireArrow()
@@ -123,6 +163,8 @@ void AMyArcher::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+
+		EnhancedInputComponent->BindAction(LoadAction, ETriggerEvent::Triggered, this, &AMyArcher::InputLoad);
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AMyArcher::FireArrow);
 	}

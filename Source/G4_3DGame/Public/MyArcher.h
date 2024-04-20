@@ -42,6 +42,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<class AArrow> ProjectileClass;
 
+	class USaveGame* LoadObj;
+
+	class UMySaveGame* saveObj;
+
 
 	// INPUT ACTIONS AND IMC
 
@@ -61,6 +65,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	class UInputAction* FireAction;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = " Input", meta = (AllowPrivateAccess = "true"))
+	class UInputAction* LoadAction;
+
 
 	// FUNCTIONS
 
@@ -68,6 +75,10 @@ public:
 	void Move(const FInputActionValue& Value);
 
 	void LookAround(const FInputActionValue& Value);
+
+	void InputLoad(const FInputActionValue& Value);
+
+	void SaveGame();
 
 	UFUNCTION()
 	void FireArrow();
