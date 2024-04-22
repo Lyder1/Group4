@@ -22,16 +22,16 @@ AArrow::AArrow()
 		// Set the sphere's collision radius.
 		CollisionComponent->InitSphereRadius(15.0f);
 		// Set the root component to be the collision component.
-		RootComponent = CollisionComponent;
+		CollisionComponent->SetupAttachment(ArrowMesh);
 	}
 
 	if (!ArrowMovementComponent)
 	{
 		// Use this component to drive this projectile's movement.
 		ArrowMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-		ArrowMovementComponent->SetUpdatedComponent(CollisionComponent);
-		ArrowMovementComponent->InitialSpeed = 10000.0f;
-		ArrowMovementComponent->MaxSpeed = 10000.0f;
+		ArrowMovementComponent->SetUpdatedComponent(RootComponent);
+		ArrowMovementComponent->InitialSpeed = 1000.0f;
+		ArrowMovementComponent->MaxSpeed = 1000.0f;
 		ArrowMovementComponent->bRotationFollowsVelocity = true;
 		ArrowMovementComponent->bShouldBounce = false;
 		//ArrowMovementComponent->Bounciness = 0.3f;
@@ -40,13 +40,16 @@ AArrow::AArrow()
 
 	if (!ArrowMesh) {
 		ArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow Mesh"));
-		ArrowMesh->SetupAttachment(CollisionComponent);
+		ArrowMesh->SetupAttachment(RootComponent);
 	}
 
 	/*if (!NewArrowMesh) {
 		NewArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow Mesh"));
 		NewArrowMesh->SetupAttachment(ArrowMesh);
 	}*/
+	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AArrow::OnHit);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredComponent(ArrowMesh);
 }
 
 // Called when the game starts or when spawned
@@ -63,8 +66,17 @@ void AArrow::Tick(float DeltaTime)
 
 }
 
+void AArrow::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor != this) {
+		Destroy();
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Arrow Destroyed"));
+	}
+}
+
 void AArrow::FireInDirection(const FVector& ShootDirection)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Arrow Fired"));
 	ArrowMovementComponent->Velocity = ShootDirection * ArrowMovementComponent->InitialSpeed;
 }
 

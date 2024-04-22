@@ -44,6 +44,9 @@ public:
 	/*UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
 	UStaticMeshComponent* NewArrowMesh;*/
 
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 	// Function that initializes the projectile's velocity in the shoot direction.
 	void FireInDirection(const FVector& ShootDirection);
 };
