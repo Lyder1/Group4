@@ -92,47 +92,69 @@ void AMyArcher::SaveGame()
 void AMyArcher::FireArrow()
 {
 	// Attempt to fire a projectile.
-	if (ProjectileClass)
-	{
-		// Get the camera transform.
-		FVector CameraLocation;
-		FRotator CameraRotation;
-		GetActorEyesViewPoint(CameraLocation, CameraRotation);
-
-		// Set ArrowOrigin to spawn projectiles slightly in front of the camera.
-		ArrowOrigin.Set(100.0f, 0.0f, -50.0f);
-
-		// Transform MuzzleOffset from camera space to world space.
-		FVector OriginLocation = CameraLocation + FTransform(CameraRotation).TransformVector(ArrowOrigin);
-
-		// Skew the aim to be slightly upwards.
-		FRotator OriginRotation = CameraRotation;
-		OriginRotation.Pitch += 3.0f;
-
-		UWorld* World = GetWorld();
-		if (World)
+	if (Ammo > 0) {
+		if (ProjectileClass)
 		{
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
-			SpawnParams.Instigator = GetInstigator();
+			// Get the camera transform.
+			FVector CameraLocation;
+			FRotator CameraRotation;
+			GetActorEyesViewPoint(CameraLocation, CameraRotation);
 
-			// Spawn the projectile at the muzzle.
-			AArrow* Projectile = World->SpawnActor<AArrow>(ProjectileClass, OriginLocation, OriginRotation, SpawnParams);
-			if (Projectile)
+			// Set ArrowOrigin to spawn projectiles slightly in front of the camera.
+			ArrowOrigin.Set(100.0f, 0.0f, -50.0f);
+
+			// Transform MuzzleOffset from camera space to world space.
+			FVector OriginLocation = CameraLocation + FTransform(CameraRotation).TransformVector(ArrowOrigin);
+
+			// Skew the aim to be slightly upwards.
+			FRotator OriginRotation = CameraRotation;
+			OriginRotation.Pitch += 3.0f;
+
+			UWorld* World = GetWorld();
+			if (World)
 			{
-				// Set the projectile's initial trajectory.
-				FVector LaunchDirection = OriginRotation.Vector();
-				Projectile->FireInDirection(LaunchDirection);
+				FActorSpawnParameters SpawnParams;
+				SpawnParams.Owner = this;
+				SpawnParams.Instigator = GetInstigator();
+
+				// Spawn the projectile at the muzzle.
+				AArrow* Projectile = World->SpawnActor<AArrow>(ProjectileClass, OriginLocation, OriginRotation, SpawnParams);
+				if (Projectile)
+				{
+					// Set the projectile's initial trajectory.
+					FVector LaunchDirection = OriginRotation.Vector();
+					Projectile->FireInDirection(LaunchDirection);
+				}
 			}
 		}
 	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("No Ammo"));
+	}
+
 }
 
 // Called when the game starts or when spawned
 void AMyArcher::BeginPlay()
 {
+	//if (PlayerHealth > 0) {
+	//	Super::BeginPlay();
+
+	//	// Adding the Input Mapping Context
+	//	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	//	{
+	//		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	//		{
+	//			Subsystem->AddMappingContext(IMC, 0);
+	//		}
+	//	}
+	//}
+	//else {
+	//	//Super::EndPlay();
+	//}
+
 	Super::BeginPlay();
-	
+
 	// Adding the Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{

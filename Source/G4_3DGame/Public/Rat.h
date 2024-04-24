@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/BoxComponent.h"
 #include "Rat.generated.h"
 
 struct FInputActionValue;
@@ -33,6 +34,9 @@ public:
 	//Rat Mesh
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	USkeletalMeshComponent* RatMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	UBoxComponent* RatCollisionBox;
 
 
 	// INPUT ACTIONS AND IMC

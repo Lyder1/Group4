@@ -42,6 +42,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<class AArrow> ProjectileClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variable")
+	float PlayerHealth = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variable")
+	float MaxHealth = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variable")
+	int Ammo = 10;
+
 	class USaveGame* LoadObj;
 
 	class UMySaveGame* saveObj;
