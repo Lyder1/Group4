@@ -59,7 +59,7 @@ void AMyArcher::FireArrow()
 		FRotator CameraRotation;
 		GetActorEyesViewPoint(CameraLocation, CameraRotation);
 
-		// Set ArrowOrigin to spawn projectiles slightly in front of the camera.
+		// Set ArrowOrigin to spawn projectiles slightly in front of the mesh.
 		ArrowOrigin.Set(100.0f, 0.0f, 0.0f);
 
 		// Transform MuzzleOffset from camera space to world space.
