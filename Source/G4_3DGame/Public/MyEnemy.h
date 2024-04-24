@@ -20,6 +20,7 @@ public:
 
 protected:
 	FTimerHandle DelayTimerHandle;
+	int HP = 5;
 
 	float MaxGroundCheckDistance = 50.0f;
 	float TotalDistance;
@@ -59,6 +60,7 @@ protected:
 	UFUNCTION()
 	void DetectionEndReaction();
 
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -68,5 +70,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION()
+	void OnHit();
 
 };

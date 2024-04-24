@@ -35,13 +35,11 @@ void AMyEnemy::OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor
 	{
 		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
 	}
-	if (OtherActor->IsA<AArrow>())
-	{
-		return;
+	if(OtherActor->IsA<AMyArcher>()){
+		DetectionArea->SetSphereRadius(1750.0f);
+		Detected = true;
+		DelayedRotation = false;
 	}
-	DetectionArea->SetSphereRadius(1750.0f);
-	Detected = true;
-	DelayedRotation = false;
 
 
 }
@@ -68,6 +66,12 @@ void AMyEnemy::BeginPlay()
 	HomeLocation = GetActorLocation();
 	HomeRotation = GetActorRotation();
 	
+}
+
+void AMyEnemy::OnHit()
+{
+	HP--;
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT(""), HP));
 }
 
 // Called every frame
@@ -129,6 +133,9 @@ void AMyEnemy::Tick(float DeltaTime)
 	}else if (DelayedRotation) {
 		SetActorRotation(FRotator(0.0f, HomeRotation.Yaw, 0.0f));
 		DelayedRotation = false;
+	}
+	if (HP <= 0) {
+		Destroy();
 	}
 }
 
