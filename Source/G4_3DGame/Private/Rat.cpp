@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ARat::ARat()
@@ -27,6 +28,8 @@ ARat::ARat()
 	RatSpringArm->bUsePawnControlRotation = true;
 	RatSpringArm->bEnableCameraLag = true;
 	RatSpringArm->TargetArmLength = 300.0f;
+
+	GetCharacterMovement()->JumpZVelocity = 200.0f;
 
 }
 
