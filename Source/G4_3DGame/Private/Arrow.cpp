@@ -52,25 +52,20 @@ void AArrow::Tick(float DeltaTime)
 
 void AArrow::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("OnHit function called"));
 	if (OtherComp->GetOwner() == this || OtherComp->ComponentHasTag("DetectionArea")) {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Arrow Ignored"));
 		return;
 	}
 	if (OtherComp->ComponentHasTag("HitBox")) {
 		AMyEnemy* Enemy = Cast<AMyEnemy>(OtherActor);
 		Enemy->OnHit();
 		Destroy();
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Enemy Hit"));
 
 	}
 	Destroy();
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Arrow Destroyed"));
 }
 
 void AArrow::FireInDirection(const FVector& ShootDirection)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Arrow Fired"));
 	ArrowMovementComponent->Velocity = ShootDirection * ArrowMovementComponent->InitialSpeed;
 }
 

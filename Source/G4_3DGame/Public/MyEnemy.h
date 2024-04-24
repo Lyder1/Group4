@@ -38,6 +38,7 @@ protected:
 	bool Escaping = false;
 	bool EnemyIsHome;
 	bool DelayedRotation = false;
+	bool Alive = true;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	class USceneComponent* RootScene;
@@ -73,5 +74,8 @@ public:
 
 	UFUNCTION()
 	void OnHit();
+
+	void StopMovement();
+	void Die();
 
 };

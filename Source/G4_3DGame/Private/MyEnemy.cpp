@@ -2,9 +2,9 @@
 
 
 #include "MyEnemy.h"
-#include "TimerManager.h"
-#include "Arrow.h"
 #include "Components/SphereComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Arrow.h"
 
 // Sets default values
 AMyEnemy::AMyEnemy()
@@ -52,9 +52,9 @@ void AMyEnemy::OnDetectionEnd(UPrimitiveComponent* OverlappedComponent, AActor* 
 
 void AMyEnemy::DetectionEndReaction()
 {
-	DetectionArea->SetSphereRadius(900.0f);
-	Detected = false;
-	EnemyIsHome = false;
+		DetectionArea->SetSphereRadius(900.0f);
+		Detected = false;
+		EnemyIsHome = false;
 }
 
 
@@ -70,15 +70,36 @@ void AMyEnemy::BeginPlay()
 
 void AMyEnemy::OnHit()
 {
+	DetectionArea->SetSphereRadius(1750.0f);
+	Detected = false;
+	Detected = true;
+	DelayedRotation = false;
 	HP--;
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT(""), HP));
+	GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+}
+
+void AMyEnemy::StopMovement()
+{
+	Speed = 0.0f;
+	Direction = FVector::ZeroVector;
+	PlayerLocation = FVector::ZeroVector;
+	StartLocation = FVector::ZeroVector;
+	HomeDirection = FVector::ZeroVector;
+	HomeLocation = FVector::ZeroVector;
+	CurrentLocation = FVector::ZeroVector;
+	HomeRotation = FRotator::ZeroRotator;
+
+}
+
+void AMyEnemy::Die()
+{
+	Destroy();
 }
 
 // Called every frame
 void AMyEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	StartLocation = GetActorLocation();
 	PlayerLocation = GetWorld()->GetFirstPlayerController()->GetCharacter()->GetActorLocation();
 	Direction = PlayerLocation - StartLocation;
@@ -89,8 +110,7 @@ void AMyEnemy::Tick(float DeltaTime)
 
 	Direction.Normalize();
 	HomeDirection.Normalize();
-
-	if (Detected && CurrentDistance < TotalDistance) {
+	if (Detected && CurrentDistance < TotalDistance && Alive) {
 		FVector NewLocation = GetActorLocation() + Direction * Speed * DeltaTime;
 		CurrentDistance = (NewLocation - StartLocation).Size();
 
@@ -101,7 +121,7 @@ void AMyEnemy::Tick(float DeltaTime)
 		Params.AddIgnoredActor(this);
 		FVector EndLocation = NewLocation + DownVector * MaxGroundCheckDistance;
 
-		if (GetWorld()->LineTraceSingleByChannel(Hit, NewLocation, EndLocation, ECC_WorldStatic, Params)){
+		if (GetWorld()->LineTraceSingleByChannel(Hit, NewLocation, EndLocation, ECC_WorldStatic, Params)) {
 			NewLocation = Hit.ImpactPoint;
 		}
 		SetActorLocation(NewLocation);
@@ -109,7 +129,8 @@ void AMyEnemy::Tick(float DeltaTime)
 		FRotator TargetRotation = (PlayerLocation - NewLocation).Rotation() - FRotator(0.0f, 90.0f, 0.0f);
 		SetActorRotation(FRotator(0.0f, TargetRotation.Yaw, 0.0f));
 	}
-	if (!Detected && !EnemyIsHome && HomeCurrentDistance < HomeTotalDistance) {
+
+	if (!Detected && !EnemyIsHome && HomeCurrentDistance < HomeTotalDistance && Alive) {
 
 		FVector NewLocation = GetActorLocation() + HomeDirection * Speed * DeltaTime;
 		HomeCurrentDistance = (NewLocation - StartLocation).Size();
@@ -127,15 +148,20 @@ void AMyEnemy::Tick(float DeltaTime)
 		SetActorLocation(NewLocation);
 		FRotator TargetRotation = (HomeLocation - NewLocation).Rotation() - FRotator(0.0f, 90.0f, 0.0f);
 		SetActorRotation(FRotator(0.0f, TargetRotation.Yaw, 0.0f));
-		
+
 		CurrentLocation = GetActorLocation();
 		DelayedRotation = true;
-	}else if (DelayedRotation) {
+	}
+	else if (DelayedRotation && Alive) {
 		SetActorRotation(FRotator(0.0f, HomeRotation.Yaw, 0.0f));
 		DelayedRotation = false;
 	}
-	if (HP <= 0) {
-		Destroy();
+	if (HP <= 0 && Alive) {
+		StopMovement();
+		Mesh->SetSimulatePhysics(true);
+		Alive = false;
+		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::Die, 05.0f, false);
 	}
 }
 
