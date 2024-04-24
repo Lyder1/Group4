@@ -43,14 +43,22 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	class USceneComponent* RootScene;
 
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	USkeletalMeshComponent* Mesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
+	class USphereComponent* DetectionArea;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	float Speed;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
-	class USphereComponent* DetectionArea;
+	UFUNCTION()
+	void OnHit();
 
 	UFUNCTION()
 	void OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -61,21 +69,13 @@ protected:
 	UFUNCTION()
 	void DetectionEndReaction();
 
+	void StopMovement();
+	void Die();
 
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
+
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UFUNCTION()
-	void OnHit();
-
-	void StopMovement();
-	void Die();
-
 };
