@@ -124,9 +124,12 @@ void AMyArcher::FireArrow()
 					// Set the projectile's initial trajectory.
 					FVector LaunchDirection = OriginRotation.Vector();
 					Projectile->FireInDirection(LaunchDirection);
+					Ammo--;
 				}
 			}
+			
 		}
+		
 	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("No Ammo"));
