@@ -19,6 +19,31 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, Category = "Mesh")
+	UStaticMeshComponent* Mesh;
+
+	UPROPERTY(VisibleAnywhere, Category = "HitBox")
+	class USphereComponent* HitBox;
+
+	UPROPERTY(EditAnywhere)
+	float Health;
+
+	UPROPERTY(EditAnywhere)
+	float ExplosionDamage;
+
+	UPROPERTY(EditAnywhere)
+	float ExplosionRadius;
+
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* ExplosionEffect;
+
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	void Explode();
+
+	bool Exploded;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

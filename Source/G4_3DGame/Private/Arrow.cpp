@@ -34,13 +34,14 @@ AArrow::AArrow()
 	// Set the root component to be the collision component.
 	CollisionComponent->SetupAttachment(RootComponent);
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AArrow::OnHit);
+
+	CollisionComponent->ComponentTags.Add("Arrow");
 }
 
 // Called when the game starts or when spawned
 void AArrow::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame

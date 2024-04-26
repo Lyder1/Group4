@@ -39,7 +39,7 @@ void AExplosive_Barrel::BeginPlay()
 
 void AExplosive_Barrel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (!Exploded && (OtherComp->ComponentHasTag("Arrow")))
+	if (!Exploded && (OtherComp->ComponentHasTag("DetectionArea")))
 	{
 		Explode();
 	}
@@ -47,7 +47,7 @@ void AExplosive_Barrel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 
 void AExplosive_Barrel::Explode()
 {
-	if (ExplosionEffect)
+	/*if (ExplosionEffect)
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 	}
@@ -59,7 +59,7 @@ void AExplosive_Barrel::Explode()
 
 	Exploded = true;
 
-	Destroy();
+	Destroy();*/
 }
 
 // Called every frame

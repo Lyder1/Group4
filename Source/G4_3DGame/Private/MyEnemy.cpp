@@ -34,11 +34,11 @@ AMyEnemy::AMyEnemy()
 
 void AMyEnemy::OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (GetWorld()->GetTimerManager().IsTimerActive(DelayTimerHandle))
+	if (GetWorld()->GetTimerManager().IsTimerActive(DelayTimerHandle) && Alive)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
 	}
-	if(OtherActor->IsA<AMyArcher>()){
+	if(OtherActor->IsA<AMyArcher>() && Alive){
 		DetectionArea->SetSphereRadius(1750.0f);
 		Detected = true;
 		DelayedRotation = false;
@@ -50,7 +50,9 @@ void AMyEnemy::OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor
 
 void AMyEnemy::OnDetectionEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if(Alive){
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::DetectionEndReaction, 10.0f, false);
+	}
 }
 
 void AMyEnemy::DetectionEndReaction()
@@ -73,12 +75,14 @@ void AMyEnemy::BeginPlay()
 
 void AMyEnemy::OnHit()
 {
-	DetectionArea->SetSphereRadius(1750.0f);
-	Detected = false;
-	Detected = true;
-	DelayedRotation = false;
-	HP--;
-	GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+	if(Alive) {
+		DetectionArea->SetSphereRadius(1750.0f);
+		Detected = false;
+		Detected = true;
+		DelayedRotation = false;
+		HP--;
+		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+	}
 }
 
 void AMyEnemy::StopMovement()
@@ -159,13 +163,11 @@ void AMyEnemy::Tick(float DeltaTime)
 		SetActorRotation(FRotator(0.0f, HomeRotation.Yaw, 0.0f));
 		DelayedRotation = false;
 	}
-	if (HP <= 0 && Alive) {
-		StopMovement();
-		Mesh->SetSimulatePhysics(true);
+	if (HP == 0 && Alive) {
 		Alive = false;
-		//DetectionArea->SetGenerateOverlapEvents(false);
-		//HitBox->SetGenerateOverlapEvents(false);
-		//Mesh->SetGenerateOverlapEvents(false);
+		StopMovement();
+		DetectionArea->SetSphereRadius(0.0f);
+		Mesh->SetSimulatePhysics(true);
 		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::Die, 03.0f, false);
 	}
