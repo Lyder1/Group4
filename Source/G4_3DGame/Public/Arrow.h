@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "TimerManager.h"
+
 #include "Arrow.generated.h"
 
 UCLASS()
@@ -18,6 +20,7 @@ public:
 	AArrow();
 
 protected:
+	FTimerHandle DelayTimerHandle;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -43,6 +46,9 @@ public:
 
 	/*UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
 	UStaticMeshComponent* NewArrowMesh;*/
+
+	//Function to destory arrow if it does not hit anything
+	void SelfDestruct();
 
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
