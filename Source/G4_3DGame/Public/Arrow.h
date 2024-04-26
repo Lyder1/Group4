@@ -47,7 +47,7 @@ public:
 	/*UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
 	UStaticMeshComponent* NewArrowMesh;*/
 
-	//Function to destory arrow if it does not hit anything
+	//Function to destory arrow in case it never hits anything
 	void SelfDestruct();
 
 	UFUNCTION()

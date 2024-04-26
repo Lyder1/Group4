@@ -54,6 +54,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
 	class USphereComponent* DetectionArea;
 
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "HitBox")
+	class UCapsuleComponent* HitBox;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	float Speed;
 

@@ -16,6 +16,9 @@ AMyEnemy::AMyEnemy()
 	DetectionArea->SetSphereRadius(900.0f);
 	DetectionArea->SetupAttachment(RootComponent);
 
+	HitBox = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HitBox"));
+	HitBox->SetupAttachment(RootComponent);
+
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	Mesh->SetupAttachment(RootComponent);
 
@@ -160,8 +163,11 @@ void AMyEnemy::Tick(float DeltaTime)
 		StopMovement();
 		Mesh->SetSimulatePhysics(true);
 		Alive = false;
+		//DetectionArea->SetGenerateOverlapEvents(false);
+		//HitBox->SetGenerateOverlapEvents(false);
+		//Mesh->SetGenerateOverlapEvents(false);
 		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::Die, 05.0f, false);
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::Die, 03.0f, false);
 	}
 }
 

@@ -73,6 +73,6 @@ void AArrow::FireInDirection(const FVector& ShootDirection)
 {
 	ArrowMovementComponent->Velocity = ShootDirection * ArrowMovementComponent->InitialSpeed;
 	GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-	GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AArrow::SelfDestruct(), 10.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AArrow::SelfDestruct, 10.0f, false);
 }
 
