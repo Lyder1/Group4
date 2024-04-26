@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "TimerManager.h"
 #include "Explosive_Barrel.generated.h"
 
 UCLASS()
@@ -19,14 +20,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	FTimerHandle DelayTimerHandle;
+
+	UPROPERTY(VisibleAnywhere)
+	class USceneComponent* RootScene;
+
 	UPROPERTY(EditAnywhere, Category = "Mesh")
 	UStaticMeshComponent* Mesh;
 
 	UPROPERTY(VisibleAnywhere, Category = "HitBox")
 	class USphereComponent* HitBox;
-
-	UPROPERTY(EditAnywhere)
-	float Health;
 
 	UPROPERTY(EditAnywhere)
 	float ExplosionDamage;
@@ -37,9 +40,13 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* ExplosionEffect;
 
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* ExplosionSound;
 
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	void SoundRemoved();
 	void Explode();
 
 	bool Exploded;

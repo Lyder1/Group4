@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+#pragma once
 
 #include "Explosive_Barrel.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -12,22 +13,25 @@ AExplosive_Barrel::AExplosive_Barrel()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Mesh->CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BarrelMesh"));
-	RootComponent = Mesh;
+	
+	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = RootScene;
+
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BarrelMesh"));
+	Mesh->SetupAttachment(RootComponent);
 
 	HitBox = CreateDefaultSubobject<USphereComponent>(TEXT("HitBox"));
 	HitBox->SetupAttachment(RootComponent);
-	//HitBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	//HitBox->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
-	//HitBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-	//HitBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 
-	Health = 100.0f;
+	ExplosionSound = CreateDefaultSubobject<UAudioComponent>(TEXT("ExplosionSound"));
+	ExplosionSound->SetupAttachment(RootComponent);
+	ExplosionSound->bAutoActivate = false;
+
 	ExplosionDamage = 50.0f;
 	ExplosionRadius = 300.0f;
 	Exploded = false;
 
-	HitBox->OnComponentHit.AddDynamic(this, &AExplosive_Barrel::OnHit);
+	HitBox->OnComponentBeginOverlap.AddDynamic(this, &AExplosive_Barrel::OnHit);
 }
 
 // Called when the game starts or when spawned
@@ -37,7 +41,7 @@ void AExplosive_Barrel::BeginPlay()
 	
 }
 
-void AExplosive_Barrel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void AExplosive_Barrel::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!Exploded && (OtherComp->ComponentHasTag("Arrow")))
 	{
@@ -45,11 +49,16 @@ void AExplosive_Barrel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 	}
 }
 
-void AExplosive_Barrel::Explode()
+void AExplosive_Barrel::SoundRemoved()
 {
-	if (ExplosionEffect)
-	{
+	Destroy();
+}
+
+void AExplosive_Barrel::Explode()
+{	
+	if(ExplosionEffect){
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
+		ExplosionSound->Play();
 	}
 
 	TArray<AActor*> IgnoreActors;
@@ -59,7 +68,9 @@ void AExplosive_Barrel::Explode()
 
 	Exploded = true;
 
-	Destroy();
+	Mesh->DestroyComponent();
+	HitBox->DestroyComponent();
+	GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AExplosive_Barrel::SoundRemoved, 10.0f, false);
 }
 
 // Called every frame
