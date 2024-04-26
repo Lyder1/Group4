@@ -59,6 +59,9 @@ void AExplosive_Barrel::Explode()
 	if(ExplosionEffect){
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 		ExplosionSound->Play();
+		HitBox->ComponentTags.Add("Exploded");
+		HitBox->SetSphereRadius(300.0f);
+
 	}
 
 	TArray<AActor*> IgnoreActors;
@@ -69,8 +72,7 @@ void AExplosive_Barrel::Explode()
 	Exploded = true;
 
 	Mesh->DestroyComponent();
-	HitBox->DestroyComponent();
-	GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AExplosive_Barrel::SoundRemoved, 10.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AExplosive_Barrel::SoundRemoved, 5.0f, false);
 }
 
 // Called every frame

@@ -37,6 +37,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float ExplosionRadius;
 
+	
+
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* ExplosionEffect;
 
