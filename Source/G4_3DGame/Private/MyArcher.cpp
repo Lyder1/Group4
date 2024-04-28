@@ -28,6 +28,9 @@ AMyArcher::AMyArcher()
 	ArcherSpringArm->TargetArmLength = 300.0f;
 	ArcherSpringArm->SocketOffset.Set(0, 70.0f, 50.0f);
 
+	InteractBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Archer Interact Detection Box"));
+	InteractBox->SetupAttachment(RootComponent);
+
 	saveObj = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
 	LoadObj = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
 }
@@ -89,6 +92,10 @@ void AMyArcher::SaveGame()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Data saved ... "));
 }
 
+void AMyArcher::Interact()
+{
+}
+
 void AMyArcher::FireArrow()
 {
 	// Attempt to fire a projectile.
@@ -134,6 +141,10 @@ void AMyArcher::FireArrow()
 
 }
 
+void AMyArcher::InteractOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+}
+
 // Called when the game starts or when spawned
 void AMyArcher::BeginPlay()
 {
@@ -163,6 +174,8 @@ void AMyArcher::BeginPlay()
 			Subsystem->AddMappingContext(IMC, 0);
 		}
 	}
+
+	InteractBox->OnComponentBeginOverlap.AddDynamic(this, &AMyArcher::InteractOnOverlap);
 }
 
 // Called every frame

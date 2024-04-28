@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/BoxComponent.h"
 #include "Arrow.h"
 #include "MyArcher.generated.h"
 
@@ -34,6 +35,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	USkeletalMeshComponent* ArcherMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	UBoxComponent* InteractBox;
+
 	// Origin offset for where arrow will spawn
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	FVector ArrowOrigin;
@@ -41,6 +45,10 @@ public:
 	// Which class projectile to spawn
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<class AArrow> ProjectileClass;
+
+
+	// VARIABLES
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variable")
 	float PlayerHealth = 10;
@@ -77,6 +85,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = " Input", meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LoadAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	class UInputAction* InteractAction;
+
 
 	// FUNCTIONS
 
@@ -89,8 +100,14 @@ public:
 
 	void SaveGame();
 
+	void Interact();
+
 	UFUNCTION()
 	void FireArrow();
+
+	UFUNCTION()
+	void InteractOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
+		int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
 	// Called when the game starts or when spawned
