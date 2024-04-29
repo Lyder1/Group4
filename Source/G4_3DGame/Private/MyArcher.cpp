@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "MySaveGame.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AMyArcher::AMyArcher()
@@ -33,6 +34,8 @@ AMyArcher::AMyArcher()
 
 	saveObj = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
 	LoadObj = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
+
+	GetCharacterMovement()->JumpZVelocity = 600.0f;
 }
 
 void AMyArcher::Move(const FInputActionValue& Value)
