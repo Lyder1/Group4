@@ -131,6 +131,7 @@ void AMyArcher::FireArrow()
 					// Set the projectile's initial trajectory.
 					FVector LaunchDirection = OriginRotation.Vector();
 					Projectile->FireInDirection(LaunchDirection);
+					Ammo--;
 				}
 			}
 		}
