@@ -16,11 +16,11 @@ ARat::ARat()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	RatCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Rat CollisionBox"));
-	RootComponent = RatCollisionBox;
+	/*RatCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Rat CollisionBox"));
+	RootComponent = RatCollisionBox;*/
 
 	RatSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
-	RatSpringArm->SetupAttachment(GetMesh());
+	RatSpringArm->SetupAttachment(RootComponent);
 
 	RatCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
 	RatCamera->AttachToComponent(RatSpringArm, FAttachmentTransformRules::KeepRelativeTransform);
