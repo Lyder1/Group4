@@ -13,6 +13,7 @@ ADoor::ADoor()
 	RootComponent = CollisionBox;
 
 	DoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Door Mesh Component"));
+	DoorMesh->SetupAttachment(RootComponent);
 
 }
 
@@ -32,5 +33,20 @@ void ADoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ADoor::InteractWithThis()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Emerald, TEXT("INTERACTING"));
+	UE_LOG(LogTemp, Warning, TEXT("INTERACTING"));
+
+	if (IsOpened) {
+		AddActorLocalRotation(CloseDoor, false, 0, ETeleportType::None);
+		IsOpened = false;
+	}
+	else {
+		AddActorLocalRotation(OpenDoor, false, 0, ETeleportType::None);
+		IsOpened = true;
+	}
 }
 

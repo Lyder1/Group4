@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
+#include "InteractionInterface.h"
 #include "Door.generated.h"
 
 UCLASS()
-class G4_3DGAME_API ADoor : public AActor
+class G4_3DGAME_API ADoor : public AActor, public IInteractionInterface
 {
 	GENERATED_BODY()
 	
@@ -27,6 +28,16 @@ public:
 	UBoxComponent* CollisionBox;
 
 
+	// VARIABLES
+
+
+	bool IsOpened = false;
+
+	FQuat CloseDoor = FQuat(FRotator(0, -90.0f, 0));
+
+	FQuat OpenDoor = FQuat(FRotator(0, 90.0f, 0));
+
+
 	// FUNCTIONS
 
 
@@ -42,4 +53,5 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void InteractWithThis() override;
 };

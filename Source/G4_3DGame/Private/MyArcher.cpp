@@ -147,6 +147,15 @@ void AMyArcher::FireArrow()
 
 void AMyArcher::InteractOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	Interface = Cast<IInteractionInterface>(OtherActor);
+}
+
+void AMyArcher::InputInteract()
+{
+	if (Interface)
+	{
+		Interface->InteractWithThis();
+	}
 }
 
 // Called when the game starts or when spawned
@@ -206,6 +215,8 @@ void AMyArcher::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(LoadAction, ETriggerEvent::Triggered, this, &AMyArcher::InputLoad);
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AMyArcher::FireArrow);
+
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &AMyArcher::InputInteract);
 	}
 }
 

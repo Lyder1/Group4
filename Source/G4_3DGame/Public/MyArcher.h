@@ -6,12 +6,13 @@
 #include "GameFramework/Character.h"
 #include "Components/BoxComponent.h"
 #include "Arrow.h"
+#include "InteractionInterface.h"
 #include "MyArcher.generated.h"
 
 struct FInputActionValue;
 
 UCLASS()
-class G4_3DGAME_API AMyArcher : public ACharacter
+class G4_3DGAME_API AMyArcher : public ACharacter, public IInteractionInterface
 {
 	GENERATED_BODY()
 
@@ -63,6 +64,8 @@ public:
 
 	class UMySaveGame* saveObj;
 
+	IInteractionInterface* Interface = nullptr;
+
 
 	// INPUT ACTIONS AND IMC
 
@@ -108,6 +111,8 @@ public:
 	UFUNCTION()
 	void InteractOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
 		int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	void InputInteract();
 
 protected:
 	// Called when the game starts or when spawned
