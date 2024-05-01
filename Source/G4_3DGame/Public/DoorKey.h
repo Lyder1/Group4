@@ -4,50 +4,44 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 #include "InteractionInterface.h"
-#include "DoorKey.h"
-#include "Door.generated.h"
+#include "DoorKey.generated.h"
 
 UCLASS()
-class G4_3DGAME_API ADoor : public AActor, public IInteractionInterface
+class G4_3DGAME_API ADoorKey : public AActor, public IInteractionInterface
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ADoor();
+	ADoorKey();
 
 
 	// COMPONENTS
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
-	UStaticMeshComponent* DoorMesh;
+	UStaticMeshComponent* KeyMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
-	UBoxComponent* CollisionBox;
+	USphereComponent* CollisionSphere;
 
 
 	// VARIABLES
 
 
-	bool IsOpened = false;
-
-	FQuat CloseDoor = FQuat(FRotator(0, -90.0f, 0));
-
-	FQuat OpenDoor = FQuat(FRotator(0, 90.0f, 0));
+	bool IsHeld = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variable")
-	int DoorIndex;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door | key")
-	AActor* LinkedKey;
+	int	KeyIndex;
 
 
 	// FUNCTIONS
 
-	
+
+	UFUNCTION()
+	int GetKeyIndex() { return KeyIndex; } 
 
 protected:
 	// Called when the game starts or when spawned
@@ -58,4 +52,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void InteractWithThis() override;
+
 };

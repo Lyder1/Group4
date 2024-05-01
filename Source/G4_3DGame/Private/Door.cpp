@@ -13,13 +13,10 @@ ADoor::ADoor()
 	RootComponent = CollisionBox;
 
 	DoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Door Mesh Component"));
-	DoorMesh->SetupAttachment(RootComponent);
+	DoorMesh->SetupAttachment(CollisionBox);
 
 }
 
-void ADoor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-}
 
 // Called when the game starts or when spawned
 void ADoor::BeginPlay()
@@ -37,16 +34,25 @@ void ADoor::Tick(float DeltaTime)
 
 void ADoor::InteractWithThis()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Emerald, TEXT("INTERACTING"));
-	UE_LOG(LogTemp, Warning, TEXT("INTERACTING"));
+	
+	if (LinkedKey) {
 
-	if (IsOpened) {
-		AddActorLocalRotation(CloseDoor, false, 0, ETeleportType::None);
-		IsOpened = false;
+		if (!DoorIndex) 
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Emerald, TEXT("Door unlocked"));
+			if (IsOpened) {
+				AddActorLocalRotation(CloseDoor, false, 0, ETeleportType::None);
+				IsOpened = false;
+			}
+			else {
+				AddActorLocalRotation(OpenDoor, false, 0, ETeleportType::None);
+				IsOpened = true;
+			}
+		}
 	}
 	else {
-		AddActorLocalRotation(OpenDoor, false, 0, ETeleportType::None);
-		IsOpened = true;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Emerald, TEXT("Door is locked"));
 	}
+	
 }
 
