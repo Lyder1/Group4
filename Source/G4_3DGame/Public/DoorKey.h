@@ -43,6 +43,9 @@ public:
 	UFUNCTION()
 	int GetKeyIndex() { return KeyIndex; } 
 
+	UFUNCTION()
+	bool CheckIfHeld() { return IsHeld; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

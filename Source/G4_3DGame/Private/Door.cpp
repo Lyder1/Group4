@@ -34,20 +34,15 @@ void ADoor::Tick(float DeltaTime)
 
 void ADoor::InteractWithThis()
 {
-	
-	if (LinkedKey) {
-
-		if (!DoorIndex) 
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Emerald, TEXT("Door unlocked"));
-			if (IsOpened) {
-				AddActorLocalRotation(CloseDoor, false, 0, ETeleportType::None);
-				IsOpened = false;
-			}
-			else {
-				AddActorLocalRotation(OpenDoor, false, 0, ETeleportType::None);
-				IsOpened = true;
-			}
+	if (LinkedKey && LinkedKey->CheckIfHeld()) {
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Emerald, TEXT("Door unlocked"));
+		if (IsOpened) {
+			AddActorLocalRotation(CloseDoor, false, 0, ETeleportType::None);
+			IsOpened = false;
+		}
+		else {
+			AddActorLocalRotation(OpenDoor, false, 0, ETeleportType::None);
+			IsOpened = true;
 		}
 	}
 	else {

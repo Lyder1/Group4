@@ -42,7 +42,7 @@ public:
 	int DoorIndex;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door | key")
-	AActor* LinkedKey;
+	ADoorKey* LinkedKey;
 
 
 	// FUNCTIONS
