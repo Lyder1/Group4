@@ -27,6 +27,7 @@ protected:
 	float CurrentDistance = 0.0f;
 	float HomeTotalDistance;
 	float HomeCurrentDistance = 0.0f;
+	float RevertSpeed;
 	FVector Direction;
 	FVector PlayerLocation;
 	FVector StartLocation;
@@ -34,11 +35,15 @@ protected:
 	FVector HomeLocation;
 	FVector CurrentLocation;
 	FRotator HomeRotation;
+	FVector RevertDirection;
+	FVector RevertPlayerLocation;
+	FVector RevertStartLocation;
 	bool Detected = false;
 	bool Escaping = false;
 	bool EnemyIsHome;
 	bool DelayedRotation = false;
 	bool Alive = true;
+	bool MovementStopped = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	class USceneComponent* RootScene;
@@ -53,6 +58,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
 	class USphereComponent* DetectionArea;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack")
+	class USphereComponent* AttackArea;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "HitBox")
 	class UCapsuleComponent* HitBox;
@@ -72,7 +80,17 @@ public:
 	UFUNCTION()
 	void DetectionEndReaction();
 
+	UFUNCTION()
+	void AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void AttackEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION()
+	void Attack();
+
 	void StopMovement();
+	void StartMovement();
 	void Die();
 
 	// Called every frame

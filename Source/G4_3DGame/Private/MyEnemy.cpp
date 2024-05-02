@@ -16,6 +16,10 @@ AMyEnemy::AMyEnemy()
 	DetectionArea->SetSphereRadius(900.0f);
 	DetectionArea->SetupAttachment(RootComponent);
 
+	AttackArea = CreateDefaultSubobject<USphereComponent>(TEXT("AttackArea"));
+	AttackArea->SetSphereRadius(104.0f);
+	AttackArea->SetupAttachment(RootComponent);
+
 	HitBox = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HitBox"));
 	HitBox->SetupAttachment(RootComponent);
 
@@ -24,6 +28,9 @@ AMyEnemy::AMyEnemy()
 
 	DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::OnDetectionBegin);
 	DetectionArea->OnComponentEndOverlap.AddDynamic(this, &AMyEnemy::OnDetectionEnd);
+
+	AttackArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::AttackStart);
+	AttackArea->OnComponentEndOverlap.AddDynamic(this, &AMyEnemy::AttackEnd);
 
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -34,23 +41,26 @@ AMyEnemy::AMyEnemy()
 
 void AMyEnemy::OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (GetWorld()->GetTimerManager().IsTimerActive(DelayTimerHandle) && Alive)
-	{
-		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+	if (OtherActor->IsA<AMyArcher>()) {
+		if (GetWorld()->GetTimerManager().IsTimerActive(DelayTimerHandle) && Alive)
+		{
+			GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+		}
+		if (Alive) {
+			DetectionArea->SetSphereRadius(1750.0f);
+			Detected = true;
+			DelayedRotation = false;
+		}
 	}
-	if(OtherActor->IsA<AMyArcher>() && Alive){
-		DetectionArea->SetSphereRadius(1750.0f);
-		Detected = true;
-		DelayedRotation = false;
+	else {
+		return;
 	}
-
-
 }
 
 
 void AMyEnemy::OnDetectionEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if(Alive){
+	if(Alive && OtherActor->IsA<AMyArcher>()){
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::DetectionEndReaction, 10.0f, false);
 	}
 }
@@ -85,17 +95,50 @@ void AMyEnemy::OnHit()
 	}
 }
 
+void AMyEnemy::AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
+	//AMyArcher* ArcherCheck = Cast<AMyArcher>(OtherActor);
+
+	if (OtherActor->IsA<AMyArcher>()) {
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Taken Damage"));
+		Attack();
+		StopMovement();
+	}
+}
+
+void AMyEnemy::AttackEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	StartMovement();
+}
+
+void AMyEnemy::Attack() {
+	AMyArcher Attacked;
+	Attacked.OnHit();
+}
+
 void AMyEnemy::StopMovement()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Stopped"));
+	MovementStopped = true;
+
+	RevertSpeed = Speed;
+	RevertDirection = Direction;
+	RevertPlayerLocation = PlayerLocation;
+
 	Speed = 0.0f;
 	Direction = FVector::ZeroVector;
 	PlayerLocation = FVector::ZeroVector;
-	StartLocation = FVector::ZeroVector;
-	HomeDirection = FVector::ZeroVector;
-	HomeLocation = FVector::ZeroVector;
-	CurrentLocation = FVector::ZeroVector;
-	HomeRotation = FRotator::ZeroRotator;
 
+}
+
+void AMyEnemy::StartMovement()
+{
+	MovementStopped = false;
+
+	Speed = RevertSpeed;
+	Direction = RevertDirection;
+	PlayerLocation = RevertPlayerLocation;
 }
 
 void AMyEnemy::Die()
@@ -117,7 +160,7 @@ void AMyEnemy::Tick(float DeltaTime)
 
 	Direction.Normalize();
 	HomeDirection.Normalize();
-	if (Detected && CurrentDistance < TotalDistance && Alive) {
+	if (Detected && CurrentDistance < TotalDistance && Alive && !MovementStopped) {
 		FVector NewLocation = GetActorLocation() + Direction * Speed * DeltaTime;
 		CurrentDistance = (NewLocation - StartLocation).Size();
 
@@ -137,7 +180,7 @@ void AMyEnemy::Tick(float DeltaTime)
 		SetActorRotation(FRotator(0.0f, TargetRotation.Yaw, 0.0f));
 	}
 
-	if (!Detected && !EnemyIsHome && HomeCurrentDistance < HomeTotalDistance && Alive) {
+	if (!Detected && !EnemyIsHome && HomeCurrentDistance < HomeTotalDistance && Alive && !MovementStopped) {
 
 		FVector NewLocation = GetActorLocation() + HomeDirection * Speed * DeltaTime;
 		HomeCurrentDistance = (NewLocation - StartLocation).Size();
@@ -159,7 +202,7 @@ void AMyEnemy::Tick(float DeltaTime)
 		CurrentLocation = GetActorLocation();
 		DelayedRotation = true;
 	}
-	else if (DelayedRotation && Alive) {
+	else if (DelayedRotation && Alive && !MovementStopped) {
 		SetActorRotation(FRotator(0.0f, HomeRotation.Yaw, 0.0f));
 		DelayedRotation = false;
 	}

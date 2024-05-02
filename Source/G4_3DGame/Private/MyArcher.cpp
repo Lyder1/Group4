@@ -32,6 +32,11 @@ AMyArcher::AMyArcher()
 	LoadObj = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
 }
 
+void AMyArcher::Die()
+{
+	ArcherMesh->SetSimulatePhysics(true);
+}
+
 void AMyArcher::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -40,6 +45,11 @@ void AMyArcher::Move(const FInputActionValue& Value)
 		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
 		AddMovementInput(GetActorRightVector(), MovementVector.X);
 	}
+}
+
+void AMyArcher::OnHit()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("took Dmg"));
 }
 
 void AMyArcher::LookAround(const FInputActionValue& Value)
@@ -172,6 +182,9 @@ void AMyArcher::BeginPlay()
 void AMyArcher::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (MaxHealth <= 0) {
+		Die();
+	}
 
 }
 
