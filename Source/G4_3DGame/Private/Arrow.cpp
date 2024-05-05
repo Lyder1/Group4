@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// EDVARD ANDREASSEN
 
 
 #include "Arrow.h"
@@ -42,6 +42,9 @@ AArrow::AArrow()
 		ArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow Mesh"));
 		ArrowMesh->SetupAttachment(CollisionComponent);
 	}
+
+	//lifespan of arrow after being fired
+	InitialLifeSpan = 3.0f;
 
 	/*if (!NewArrowMesh) {
 		NewArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow Mesh"));
