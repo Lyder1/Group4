@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "MySaveGame.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AMyArcher::AMyArcher()
@@ -28,8 +29,13 @@ AMyArcher::AMyArcher()
 	ArcherSpringArm->TargetArmLength = 300.0f;
 	ArcherSpringArm->SocketOffset.Set(0, 70.0f, 50.0f);
 
+	InteractBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Archer Interact Detection Box"));
+	InteractBox->SetupAttachment(RootComponent);
+
 	saveObj = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
 	LoadObj = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
+
+	GetCharacterMovement()->JumpZVelocity = 600.0f;
 }
 
 void AMyArcher::Move(const FInputActionValue& Value)
@@ -89,6 +95,10 @@ void AMyArcher::SaveGame()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Data saved ... "));
 }
 
+void AMyArcher::Interact()
+{
+}
+
 void AMyArcher::FireArrow()
 {
 	// Attempt to fire a projectile.
@@ -124,6 +134,7 @@ void AMyArcher::FireArrow()
 					// Set the projectile's initial trajectory.
 					FVector LaunchDirection = OriginRotation.Vector();
 					Projectile->FireInDirection(LaunchDirection);
+					Ammo--;
 				}
 			}
 		}
@@ -132,6 +143,19 @@ void AMyArcher::FireArrow()
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("No Ammo"));
 	}
 
+}
+
+void AMyArcher::InteractOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	Interface = Cast<IInteractionInterface>(OtherActor);
+}
+
+void AMyArcher::InputInteract()
+{
+	if (Interface)
+	{
+		Interface->InteractWithThis();
+	}
 }
 
 // Called when the game starts or when spawned
@@ -163,6 +187,8 @@ void AMyArcher::BeginPlay()
 			Subsystem->AddMappingContext(IMC, 0);
 		}
 	}
+
+	InteractBox->OnComponentBeginOverlap.AddDynamic(this, &AMyArcher::InteractOnOverlap);
 }
 
 // Called every frame
@@ -189,6 +215,8 @@ void AMyArcher::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(LoadAction, ETriggerEvent::Triggered, this, &AMyArcher::InputLoad);
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AMyArcher::FireArrow);
+
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &AMyArcher::InputInteract);
 	}
 }
 
