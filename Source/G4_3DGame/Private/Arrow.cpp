@@ -56,7 +56,7 @@ void AArrow::SelfDestruct()
 
 void AArrow::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherComp->GetOwner() == this || OtherComp->ComponentHasTag("DetectionArea")) {
+	if (OtherComp->GetOwner() == this || OtherComp->ComponentHasTag("DetectionArea") || (OtherComp->ComponentHasTag("AttackArea"))) {
 		return;
 	}
 	if (OtherComp->ComponentHasTag("HitBox")) {

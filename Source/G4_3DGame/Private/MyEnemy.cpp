@@ -88,7 +88,6 @@ void AMyEnemy::OnHit()
 {
 	if(Alive) {
 		DetectionArea->SetSphereRadius(1750.0f);
-		Detected = false;
 		Detected = true;
 		DelayedRotation = false;
 		HP--;
@@ -100,7 +99,7 @@ void AMyEnemy::AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	Player = Cast<AMyArcher>(OtherActor);
 	if (OtherActor->IsA<AMyArcher>()) {
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Taken Damage"));
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Player has taken Damage"));
 		Attacking = true;
 		//Attack();
 		StopMovement();
@@ -110,7 +109,9 @@ void AMyEnemy::AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 void AMyEnemy::AttackEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	Attacking = false;
-	StartMovement();
+	if(MovementStopped){
+		StartMovement();
+	}
 }
 
 //void AMyEnemy::Attack() {
