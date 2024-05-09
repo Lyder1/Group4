@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Arrow.h"
+#include "TimerManager.h"
 #include "MyArcher.generated.h"
 
 struct FInputActionValue;
@@ -42,6 +43,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<class AArrow> ProjectileClass;
 
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	UAnimMontage* MoveAnimation;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variable")
 	float PlayerHealth = 10;
 
@@ -54,6 +58,11 @@ public:
 	class USaveGame* LoadObj;
 
 	class UMySaveGame* saveObj;
+
+	FTimerHandle DelayTimerHandle;
+
+	bool Damaged = false;
+	bool IsMoving = false;
 
 
 	// INPUT ACTIONS AND IMC
@@ -92,6 +101,8 @@ public:
 	void InputLoad(const FInputActionValue& Value);
 
 	void SaveGame();
+
+	void DamageDelay();
 
 	UFUNCTION()
 	void FireArrow();

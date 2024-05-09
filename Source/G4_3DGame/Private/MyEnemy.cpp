@@ -61,6 +61,7 @@ void AMyEnemy::OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor
 void AMyEnemy::OnDetectionEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if(Alive && OtherActor->IsA<AMyArcher>()){
+		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::DetectionEndReaction, 10.0f, false);
 	}
 }
@@ -97,25 +98,26 @@ void AMyEnemy::OnHit()
 
 void AMyEnemy::AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
-	//AMyArcher* ArcherCheck = Cast<AMyArcher>(OtherActor);
-
+	Player = Cast<AMyArcher>(OtherActor);
 	if (OtherActor->IsA<AMyArcher>()) {
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Taken Damage"));
-		Attack();
+		Attacking = true;
+		//Attack();
 		StopMovement();
 	}
 }
 
 void AMyEnemy::AttackEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	Attacking = false;
 	StartMovement();
 }
 
-void AMyEnemy::Attack() {
-	AMyArcher Attacked;
-	Attacked.OnHit();
-}
+//void AMyEnemy::Attack() {
+//	if (Attacking) {
+//		Player->OnHit();
+//	}
+//}
 
 void AMyEnemy::StopMovement()
 {
@@ -205,6 +207,10 @@ void AMyEnemy::Tick(float DeltaTime)
 	else if (DelayedRotation && Alive && !MovementStopped) {
 		SetActorRotation(FRotator(0.0f, HomeRotation.Yaw, 0.0f));
 		DelayedRotation = false;
+	}
+
+	if (Attacking) {
+		Player->OnHit();
 	}
 	if (HP == 0 && Alive) {
 		Alive = false;
