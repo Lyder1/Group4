@@ -22,6 +22,7 @@ protected:
 	FTimerHandle DelayTimerHandle;
 	int HP = 5;
 
+	AMyArcher* Player;
 	float MaxGroundCheckDistance = 50.0f;
 	float TotalDistance;
 	float CurrentDistance = 0.0f;
@@ -44,6 +45,7 @@ protected:
 	bool DelayedRotation = false;
 	bool Alive = true;
 	bool MovementStopped = false;
+	bool Attacking = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	class USceneComponent* RootScene;
@@ -86,8 +88,8 @@ public:
 	UFUNCTION()
 	void AttackEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UFUNCTION()
-	void Attack();
+	//UFUNCTION()
+	//void Attack();
 
 	void StopMovement();
 	void StartMovement();

@@ -34,7 +34,7 @@ AMyArcher::AMyArcher()
 
 void AMyArcher::Die()
 {
-	ArcherMesh->SetSimulatePhysics(true);
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Dead"));
 }
 
 void AMyArcher::Move(const FInputActionValue& Value)
@@ -49,7 +49,14 @@ void AMyArcher::Move(const FInputActionValue& Value)
 
 void AMyArcher::OnHit()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("took Dmg"));
+	if (!Damaged) {
+		Damaged = true;
+		PlayerHealth--;
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyArcher::DamageDelay, 2.0f, false);
+	}
+	FString VariableString = FString::Printf(TEXT("Remaining health: %.2f"), PlayerHealth);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, VariableString);
 }
 
 void AMyArcher::LookAround(const FInputActionValue& Value)
@@ -97,6 +104,11 @@ void AMyArcher::SaveGame()
 	saveObj->PlayerRotation = GetActorRotation();
 	UGameplayStatics::SaveGameToSlot(saveObj, TEXT("Slot1"), 0);
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Data saved ... "));
+}
+
+void AMyArcher::DamageDelay()
+{
+	Damaged = false;
 }
 
 void AMyArcher::FireArrow()
@@ -182,10 +194,9 @@ void AMyArcher::BeginPlay()
 void AMyArcher::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (MaxHealth <= 0) {
+	if (PlayerHealth <= 0) {
 		Die();
 	}
-
 }
 
 // Called to bind functionality to input
