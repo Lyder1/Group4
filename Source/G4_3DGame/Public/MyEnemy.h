@@ -31,6 +31,8 @@ protected:
 	float RevertSpeed;
 	FVector Direction;
 	FVector PlayerLocation;
+	FVector LTStartLocation;
+	FVector LTEndLocation;
 	FVector StartLocation;
 	FVector HomeDirection;
 	FVector HomeLocation;
@@ -39,13 +41,12 @@ protected:
 	FVector RevertDirection;
 	FVector RevertPlayerLocation;
 	FVector RevertStartLocation;
-	bool Detected = false;
+	bool Scanning = false;
 	bool Escaping = false;
 	bool EnemyIsHome;
 	bool DelayedRotation = false;
 	bool Alive = true;
 	bool MovementStopped = false;
-	bool Attacking = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	class USceneComponent* RootScene;
@@ -60,6 +61,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
 	class USphereComponent* DetectionArea;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Status")
+	bool Detected = false;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Status");
+	bool Attacking = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack")
 	class USphereComponent* AttackArea;
@@ -77,6 +84,9 @@ public:
 	void OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
+	void WallDetectionCheck();
+
+	UFUNCTION()
 	void OnDetectionEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UFUNCTION()
@@ -89,7 +99,7 @@ public:
 	void AttackEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	//UFUNCTION()
-	//void Attack();
+//	void Attack();
 
 	void StopMovement();
 	void StartMovement();

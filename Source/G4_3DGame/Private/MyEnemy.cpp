@@ -41,19 +41,82 @@ AMyEnemy::AMyEnemy()
 
 void AMyEnemy::OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->IsA<AMyArcher>()) {
-		if (GetWorld()->GetTimerManager().IsTimerActive(DelayTimerHandle) && Alive)
+	// Check if there are any potential targets within the detection radius (sphere collision)
+	TArray<AActor*> OverlappingActors;
+	DetectionArea->GetOverlappingActors(OverlappingActors);
+	for (AActor* Actor : OverlappingActors)
+	{
+		// Check if the overlapped actor is the player		
+		AMyArcher* PlayerCharacter = Cast<AMyArcher>(Actor);
+		if (PlayerCharacter)
 		{
-			GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-		}
-		if (Alive) {
-			DetectionArea->SetSphereRadius(1750.0f);
-			Detected = true;
-			DelayedRotation = false;
+			Scanning = true;
+			// Perform a line trace from the enemy to the player
+			FHitResult HitResult;
+			LTStartLocation = GetActorLocation() + FVector(0, 0, 50);
+			LTEndLocation = PlayerCharacter->GetActorLocation();
+			FCollisionQueryParams Params;
+			Params.AddIgnoredActor(this); 
+
+			// Perform the line trace
+			bool HitWall = GetWorld()->LineTraceSingleByChannel(HitResult, LTStartLocation, LTEndLocation, ECC_Visibility, Params);
+			
+
+			if (HitResult.GetActor() == PlayerCharacter) {
+				if (GetWorld()->GetTimerManager().IsTimerActive(DelayTimerHandle) && Alive)
+				{
+					GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+				}
+				if (Alive) {
+					DetectionArea->SetSphereRadius(1750.0f);
+					Detected = true;
+					DelayedRotation = false;
+				}
+				else {
+					return;
+				}
+			}
 		}
 	}
-	else {
-		return;
+}
+
+void AMyEnemy::WallDetectionCheck()
+{
+	// Check if there are any potential targets within the detection radius (sphere collision)
+	TArray<AActor*> OverlappingActors;
+	DetectionArea->GetOverlappingActors(OverlappingActors);
+	for (AActor* Actor : OverlappingActors)
+	{
+		// Check if the overlapped actor is the player		
+		AMyArcher* PlayerCharacter = Cast<AMyArcher>(Actor);
+		if (PlayerCharacter)
+		{
+			Scanning = true;
+			// Perform a line trace from the enemy to the player
+			FHitResult HitResult;
+			LTStartLocation = GetActorLocation() + FVector(0, 0, 50);
+			LTEndLocation = PlayerCharacter->GetActorLocation();
+			FCollisionQueryParams Params;
+			Params.AddIgnoredActor(this);
+
+			// Perform the line trace
+			bool HitWall = GetWorld()->LineTraceSingleByChannel(HitResult, LTStartLocation, LTEndLocation, ECC_Visibility, Params);
+
+			if (HitResult.GetActor() == PlayerCharacter) {
+				if (GetWorld()->GetTimerManager().IsTimerActive(DelayTimerHandle) && Alive)
+				{
+					GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+				}
+				if (Alive) {
+					DetectionArea->SetSphereRadius(1750.0f);
+					Detected = true;
+					DelayedRotation = false;
+				}
+				else {
+					return;
+				}
+			}
+		}
 	}
 }
 
@@ -71,6 +134,7 @@ void AMyEnemy::DetectionEndReaction()
 		DetectionArea->SetSphereRadius(900.0f);
 		Detected = false;
 		EnemyIsHome = false;
+		Scanning = false;
 }
 
 
@@ -209,9 +273,11 @@ void AMyEnemy::Tick(float DeltaTime)
 		SetActorRotation(FRotator(0.0f, HomeRotation.Yaw, 0.0f));
 		DelayedRotation = false;
 	}
-
 	if (Attacking) {
 		Player->OnHit();
+	}
+	if (Scanning) {
+		WallDetectionCheck();
 	}
 	if (HP == 0 && Alive) {
 		Alive = false;
