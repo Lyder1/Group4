@@ -13,12 +13,8 @@ ABreakableWall::ABreakableWall()
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = RootScene;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> IntactWall(TEXT("'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> BrokenWall(TEXT("'/Game/StarterContent/Shapes/Shape_Cone.Shape_Cone'"));
-	BrokenWallMesh = BrokenWall.Object;
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
-	Mesh->SetStaticMesh(IntactWall.Object);
 
 
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
@@ -37,10 +33,8 @@ void ABreakableWall::BeginPlay()
 
 void ABreakableWall::Explode(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Hit"));
 	if (OtherComp->ComponentHasTag("Exploded")) {
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Works"));
-		Mesh->SetStaticMesh(BrokenWallMesh);
+		Destroy();
 	}
 }
 
