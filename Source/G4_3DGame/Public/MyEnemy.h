@@ -20,7 +20,6 @@ public:
 
 protected:
 	FTimerHandle DelayTimerHandle;
-	int HP = 5;
 
 	AMyArcher* Player;
 	float MaxGroundCheckDistance = 50.0f;
@@ -50,6 +49,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	class USceneComponent* RootScene;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
+	int HP = 5;
 
 
 	// Called when the game starts or when spawned

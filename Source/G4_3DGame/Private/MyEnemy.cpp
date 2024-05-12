@@ -281,11 +281,11 @@ void AMyEnemy::Tick(float DeltaTime)
 	}
 	if (HP == 0 && Alive) {
 		Alive = false;
-		StopMovement();
+		//StopMovement();
 		DetectionArea->SetSphereRadius(0.0f);
-		Mesh->SetSimulatePhysics(true);
+		//Mesh->SetSimulatePhysics(true);
 		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::Die, 03.0f, false);
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::Die, 05.0f, false);
 	}
 }
 
