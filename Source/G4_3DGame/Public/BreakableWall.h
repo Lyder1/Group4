@@ -19,16 +19,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UStaticMesh* BrokenWallMesh;
-
 	UPROPERTY(VisibleAnywhere)
 	class USceneComponent* RootScene;
 
 	UPROPERTY(EditAnyWhere, Category = "Mesh")
 	class UStaticMeshComponent* Mesh;
 
-	UPROPERTY(EditAnyWhere, Category = "Collision")
-	class USphereComponent* CollisionComponent;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Collision")
+	class UCapsuleComponent* CollisionComponent;
 
 	UFUNCTION()
 	void Explode(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
