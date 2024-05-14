@@ -63,10 +63,16 @@ public:
 
 	bool Damaged = false;
 	bool IsMoving = false;
+	bool AttackPrimed = true;
 
 
 	// INPUT ACTIONS AND IMC
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	bool AnimReadyArrow = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	bool AnimFireArrow = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	class UInputMappingContext* IMC;
@@ -103,6 +109,10 @@ public:
 	void SaveGame();
 
 	void DamageDelay();
+
+	void AttackDelay();
+
+	void PlayFireAnimation();
 
 	UFUNCTION()
 	void FireArrow();

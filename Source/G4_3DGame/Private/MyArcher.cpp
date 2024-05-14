@@ -111,12 +111,27 @@ void AMyArcher::DamageDelay()
 	Damaged = false;
 }
 
+void AMyArcher::AttackDelay()
+{
+	AttackPrimed = true;
+}
+
+void AMyArcher::PlayFireAnimation()
+{
+	AnimFireArrow = false;
+	AnimReadyArrow = true;
+}
+
+
 void AMyArcher::FireArrow()
 {
 	// Attempt to fire a projectile.
-	if (Ammo > 0) {
+	if (Ammo > 0 && AttackPrimed) {
 		if (ProjectileClass)
 		{
+			AnimFireArrow = true;
+			AnimReadyArrow = false;
+			AttackPrimed = false;
 			// Get the camera transform.
 			FVector CameraLocation;
 			FRotator CameraRotation;
@@ -151,6 +166,8 @@ void AMyArcher::FireArrow()
 			}
 			
 		}
+		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyArcher::AttackDelay, 1.0f, false);
 		
 	}
 	else {
@@ -215,6 +232,7 @@ void AMyArcher::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 		EnhancedInputComponent->BindAction(LoadAction, ETriggerEvent::Triggered, this, &AMyArcher::InputLoad);
 
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &AMyArcher::PlayFireAnimation);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AMyArcher::FireArrow);
 	}
 }
