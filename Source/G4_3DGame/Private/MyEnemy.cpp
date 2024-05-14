@@ -63,10 +63,10 @@ void AMyEnemy::OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor
 			
 
 			if (HitResult.GetActor() == PlayerCharacter) {
-				if (GetWorld()->GetTimerManager().IsTimerActive(DelayTimerHandle) && Alive)
-				{
-					GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-				}
+				//if (GetWorld()->GetTimerManager().IsTimerActive(DelayTimerHandle) && Alive)
+				//{
+				//	GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+				//}
 				if (Alive) {
 					DetectionArea->SetSphereRadius(1750.0f);
 					Detected = true;
@@ -103,10 +103,10 @@ void AMyEnemy::WallDetectionCheck()
 			bool HitWall = GetWorld()->LineTraceSingleByChannel(HitResult, LTStartLocation, LTEndLocation, ECC_Visibility, Params);
 
 			if (HitResult.GetActor() == PlayerCharacter) {
-				if (GetWorld()->GetTimerManager().IsTimerActive(DelayTimerHandle) && Alive)
-				{
-					GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-				}
+				//if (GetWorld()->GetTimerManager().IsTimerActive(DelayTimerHandle) && Alive)
+				//{
+				//	GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+				//}
 				if (Alive) {
 					DetectionArea->SetSphereRadius(1750.0f);
 					Detected = true;
@@ -165,6 +165,7 @@ void AMyEnemy::AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	if (OtherActor->IsA<AMyArcher>()) {
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Player has taken Damage"));
 		Attacking = true;
+		OnGoingAttackAnim = true;
 		//Attack();
 		StopMovement();
 	}
@@ -176,6 +177,7 @@ void AMyEnemy::AttackEnd(UPrimitiveComponent* OverlappedComponent, AActor* Other
 	if(MovementStopped){
 		StartMovement();
 	}
+
 }
 
 //void AMyEnemy::Attack() {
@@ -246,6 +248,9 @@ void AMyEnemy::Tick(float DeltaTime)
 		FRotator TargetRotation = (PlayerLocation - NewLocation).Rotation() - FRotator(0.0f, 90.0f, 0.0f);
 		SetActorRotation(FRotator(0.0f, TargetRotation.Yaw, 0.0f));
 	}
+	if (MovementStopped) {
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Stopped"));
+	}
 
 	if (!Detected && !EnemyIsHome && HomeCurrentDistance < HomeTotalDistance && Alive && !MovementStopped) {
 
@@ -269,7 +274,7 @@ void AMyEnemy::Tick(float DeltaTime)
 		CurrentLocation = GetActorLocation();
 		DelayedRotation = true;
 	}
-	else if (DelayedRotation && Alive && !MovementStopped) {
+	else if (DelayedRotation && Alive && !MovementStopped && !OnGoingAttackAnim) {
 		SetActorRotation(FRotator(0.0f, HomeRotation.Yaw, 0.0f));
 		DelayedRotation = false;
 	}
@@ -281,6 +286,7 @@ void AMyEnemy::Tick(float DeltaTime)
 	}
 	if (HP == 0 && Alive) {
 		Alive = false;
+		OnGoingAttackAnim = false;
 		//StopMovement();
 		DetectionArea->SetSphereRadius(0.0f);
 		//Mesh->SetSimulatePhysics(true);

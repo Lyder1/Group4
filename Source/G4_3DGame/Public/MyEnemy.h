@@ -79,6 +79,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	float Speed;
 
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Animation")
+	bool OnGoingAttackAnim = false;
+
 	UFUNCTION()
 	void OnHit();
 
@@ -106,6 +109,7 @@ public:
 	void StopMovement();
 	void StartMovement();
 	void Die();
+	void AttackAnimEnd();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
