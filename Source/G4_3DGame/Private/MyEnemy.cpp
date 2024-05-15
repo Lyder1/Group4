@@ -26,6 +26,8 @@ AMyEnemy::AMyEnemy()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	Mesh->SetupAttachment(RootComponent);
 
+	Speed = 375.0f;
+
 	DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::OnDetectionBegin);
 	DetectionArea->OnComponentEndOverlap.AddDynamic(this, &AMyEnemy::OnDetectionEnd);
 
@@ -41,43 +43,7 @@ AMyEnemy::AMyEnemy()
 
 void AMyEnemy::OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// Check if there are any potential targets within the detection radius (sphere collision)
-	TArray<AActor*> OverlappingActors;
-	DetectionArea->GetOverlappingActors(OverlappingActors);
-	for (AActor* Actor : OverlappingActors)
-	{
-		// Check if the overlapped actor is the player		
-		AMyArcher* PlayerCharacter = Cast<AMyArcher>(Actor);
-		if (PlayerCharacter)
-		{
-			Scanning = true;
-			// Perform a line trace from the enemy to the player
-			FHitResult HitResult;
-			LTStartLocation = GetActorLocation() + FVector(0, 0, 50);
-			LTEndLocation = PlayerCharacter->GetActorLocation();
-			FCollisionQueryParams Params;
-			Params.AddIgnoredActor(this); 
-
-			// Perform the line trace
-			bool HitWall = GetWorld()->LineTraceSingleByChannel(HitResult, LTStartLocation, LTEndLocation, ECC_Visibility, Params);
-			
-
-			if (HitResult.GetActor() == PlayerCharacter) {
-				//if (GetWorld()->GetTimerManager().IsTimerActive(DelayTimerHandle) && Alive)
-				//{
-				//	GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-				//}
-				if (Alive) {
-					DetectionArea->SetSphereRadius(1750.0f);
-					Detected = true;
-					DelayedRotation = false;
-				}
-				else {
-					return;
-				}
-			}
-		}
-	}
+	WallDetectionCheck();
 }
 
 void AMyEnemy::WallDetectionCheck()
@@ -103,14 +69,10 @@ void AMyEnemy::WallDetectionCheck()
 			bool HitWall = GetWorld()->LineTraceSingleByChannel(HitResult, LTStartLocation, LTEndLocation, ECC_Visibility, Params);
 
 			if (HitResult.GetActor() == PlayerCharacter) {
-				//if (GetWorld()->GetTimerManager().IsTimerActive(DelayTimerHandle) && Alive)
-				//{
-				//	GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-				//}
 				if (Alive) {
 					DetectionArea->SetSphereRadius(1750.0f);
 					Detected = true;
-					DelayedRotation = false;
+					Scanning = false;
 				}
 				else {
 					return;
@@ -124,18 +86,13 @@ void AMyEnemy::WallDetectionCheck()
 void AMyEnemy::OnDetectionEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if(Alive && OtherActor->IsA<AMyArcher>()){
-		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::DetectionEndReaction, 10.0f, false);
+		DetectionArea->SetSphereRadius(900.0f);
+		Detected = false;
+		Scanning = false;
 	}
 }
 
-void AMyEnemy::DetectionEndReaction()
-{
-		DetectionArea->SetSphereRadius(900.0f);
-		Detected = false;
-		EnemyIsHome = false;
-		Scanning = false;
-}
+
 
 
 
@@ -143,19 +100,15 @@ void AMyEnemy::DetectionEndReaction()
 void AMyEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	HomeLocation = GetActorLocation();
-	HomeRotation = GetActorRotation();
 	
 }
 
 void AMyEnemy::OnHit()
 {
 	if(Alive) {
-		DetectionArea->SetSphereRadius(1750.0f);
+		DetectionArea->SetSphereRadius(2000.0f);
 		Detected = true;
-		DelayedRotation = false;
 		HP--;
-		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
 	}
 }
 
@@ -163,50 +116,30 @@ void AMyEnemy::AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	Player = Cast<AMyArcher>(OtherActor);
 	if (OtherActor->IsA<AMyArcher>()) {
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Player has taken Damage"));
 		Attacking = true;
-		//Attack();
+		OnGoingAttackAnim = true;
+
 		StopMovement();
 	}
 }
 
 void AMyEnemy::AttackEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	Attacking = false;
-	if(MovementStopped){
-		StartMovement();
-	}
-
+	GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+	GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::StartMovement, 01.0f, false);
 }
 
-//void AMyEnemy::Attack() {
-//	if (Attacking) {
-//		Player->OnHit();
-//	}
-//}
-
 void AMyEnemy::StopMovement()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Stopped"));
-	MovementStopped = true;
-
-	RevertSpeed = Speed;
-	RevertDirection = Direction;
-	RevertPlayerLocation = PlayerLocation;
-
+{	
 	Speed = 0.0f;
-	Direction = FVector::ZeroVector;
-	PlayerLocation = FVector::ZeroVector;
-
+	MovementStopped = true;
 }
 
 void AMyEnemy::StartMovement()
 {
+	Speed = 375.0f;
+	Attacking = false;
 	MovementStopped = false;
-
-	Speed = RevertSpeed;
-	Direction = RevertDirection;
-	PlayerLocation = RevertPlayerLocation;
 }
 
 void AMyEnemy::Die()
@@ -214,10 +147,16 @@ void AMyEnemy::Die()
 	Destroy();
 }
 
+void AMyEnemy::AnimEnd()
+{
+	OnGoingAttackAnim = false;
+}
+
+//OnGoingAttackAnim 
+
 // Called every frame
 void AMyEnemy::Tick(float DeltaTime)
 {
-	
 	Super::Tick(DeltaTime);
 	StartLocation = GetActorLocation();
 	PlayerLocation = GetWorld()->GetFirstPlayerController()->GetCharacter()->GetActorLocation();
@@ -229,7 +168,8 @@ void AMyEnemy::Tick(float DeltaTime)
 
 	Direction.Normalize();
 	HomeDirection.Normalize();
-	if (Detected && CurrentDistance < TotalDistance && Alive && !MovementStopped && !OnGoingAttackAnim) {
+
+	if (Detected && CurrentDistance < TotalDistance && Alive && !MovementStopped) {
 		FVector NewLocation = GetActorLocation() + Direction * Speed * DeltaTime;
 		CurrentDistance = (NewLocation - StartLocation).Size();
 
@@ -248,47 +188,18 @@ void AMyEnemy::Tick(float DeltaTime)
 		FRotator TargetRotation = (PlayerLocation - NewLocation).Rotation() - FRotator(0.0f, 90.0f, 0.0f);
 		SetActorRotation(FRotator(0.0f, TargetRotation.Yaw, 0.0f));
 	}
-	if (MovementStopped) {
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Stopped"));
-	}
 
-	if (!Detected && !EnemyIsHome && HomeCurrentDistance < HomeTotalDistance && Alive && !MovementStopped && !OnGoingAttackAnim) {
-
-		FVector NewLocation = GetActorLocation() + HomeDirection * Speed * DeltaTime;
-		HomeCurrentDistance = (NewLocation - StartLocation).Size();
-
-		//Line trace to check for ground bellow
-		FVector DownVector = FVector(0.0f, 0.0f, -5.0f);
-		FHitResult Hit;
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(this);
-		FVector EndLocation = NewLocation + DownVector * MaxGroundCheckDistance;
-
-		if (GetWorld()->LineTraceSingleByChannel(Hit, NewLocation, EndLocation, ECC_WorldStatic, Params)) {
-			NewLocation = Hit.ImpactPoint;
-		}
-		SetActorLocation(NewLocation);
-		FRotator TargetRotation = (HomeLocation - NewLocation).Rotation() - FRotator(0.0f, 90.0f, 0.0f);
-		SetActorRotation(FRotator(0.0f, TargetRotation.Yaw, 0.0f));
-
-		CurrentLocation = GetActorLocation();
-		DelayedRotation = true;
-	}
-	else if (DelayedRotation && Alive && !MovementStopped && !OnGoingAttackAnim) {
-		SetActorRotation(FRotator(0.0f, HomeRotation.Yaw, 0.0f));
-		DelayedRotation = false;
-	}
 	if (Attacking) {
 		Player->OnHit();
 	}
+
 	if (Scanning) {
 		WallDetectionCheck();
 	}
+
 	if (HP == 0 && Alive) {
 		Alive = false;
-		//StopMovement();
 		DetectionArea->SetSphereRadius(0.0f);
-		//Mesh->SetSimulatePhysics(true);
 		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::Die, 05.0f, false);
 	}

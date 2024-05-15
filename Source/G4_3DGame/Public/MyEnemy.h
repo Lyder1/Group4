@@ -82,6 +82,7 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Animation")
 	bool OnGoingAttackAnim = false;
 
+
 	UFUNCTION()
 	void OnHit();
 
@@ -95,9 +96,6 @@ public:
 	void OnDetectionEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UFUNCTION()
-	void DetectionEndReaction();
-
-	UFUNCTION()
 	void AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	UFUNCTION()
@@ -109,6 +107,7 @@ public:
 	void StopMovement();
 	void StartMovement();
 	void Die();
+	void AnimEnd();
 
 
 	// Called every frame
