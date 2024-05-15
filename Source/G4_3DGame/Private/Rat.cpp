@@ -27,7 +27,8 @@ ARat::ARat()
 
 	RatSpringArm->bUsePawnControlRotation = true;
 	RatSpringArm->bEnableCameraLag = true;
-	RatSpringArm->TargetArmLength = 300.0f;
+	RatSpringArm->TargetArmLength = 100.0f;
+	RatSpringArm->SocketOffset.Set(0, 0, 50.0f);
 
 }
 
