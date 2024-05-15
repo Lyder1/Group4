@@ -41,6 +41,10 @@ void AMyArcher::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
+	if (AnimReadyArrow) {
+		MovementVector *= 0.5;
+	}
+
 	if (Controller != nullptr) {
 		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
 		AddMovementInput(GetActorRightVector(), MovementVector.X);
@@ -52,7 +56,7 @@ void AMyArcher::OnHit()
 	if (!Damaged) {
 		Damaged = true;
 		PlayerHealth--;
-		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyArcher::DamageDelay, 2.0f, false);
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyArcher::DamageDelay, 1.5f, false);
 	}
 	FString VariableString = FString::Printf(TEXT("Remaining health: %.2f"), PlayerHealth);
 
