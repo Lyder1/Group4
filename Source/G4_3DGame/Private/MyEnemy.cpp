@@ -148,12 +148,6 @@ void AMyEnemy::BeginPlay()
 	
 }
 
-void AMyEnemy::SetSpecificAnimation(bool bIsPlaying)
-{
-
-
-}
-
 void AMyEnemy::OnHit()
 {
 	if(Alive) {
@@ -223,6 +217,7 @@ void AMyEnemy::Die()
 // Called every frame
 void AMyEnemy::Tick(float DeltaTime)
 {
+	
 	Super::Tick(DeltaTime);
 	StartLocation = GetActorLocation();
 	PlayerLocation = GetWorld()->GetFirstPlayerController()->GetCharacter()->GetActorLocation();

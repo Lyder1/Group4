@@ -82,9 +82,6 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Animation")
 	bool OnGoingAttackAnim = false;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Animation")
-	void SetSpecificAnimation(bool bIsPlaying);
-
 	UFUNCTION()
 	void OnHit();
 
@@ -112,7 +109,7 @@ public:
 	void StopMovement();
 	void StartMovement();
 	void Die();
-	void AttackAnimEnd();
+
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
