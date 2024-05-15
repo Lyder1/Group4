@@ -109,7 +109,7 @@ public:
 	void StopMovement();
 	void StartMovement();
 	void Die();
-	void AttackAnimEnd();
+
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
