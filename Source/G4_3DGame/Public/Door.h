@@ -34,9 +34,13 @@ public:
 
 	bool IsOpened = false;
 
-	FQuat CloseDoor = FQuat(FRotator(0, -90.0f, 0));
+	FQuat CloseDoor = FQuat(FRotator(0, 90.0f, 0));
 
-	FQuat OpenDoor = FQuat(FRotator(0, 90.0f, 0));
+	FQuat OpenDoor = FQuat(FRotator(0, -90.0f, 0));
+
+	FVector MoveOpenDoor = FVector(-50.0f, 50.0f, 0);
+
+	FVector MoveCloseDoor = FVector(50.0f, -50.0f, 0);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variable")
 	int DoorIndex;

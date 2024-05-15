@@ -37,11 +37,15 @@ void ADoor::InteractWithThis()
 	if (LinkedKey && LinkedKey->CheckIfHeld()) {
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Emerald, TEXT("Door unlocked"));
 		if (IsOpened) {
+			AddActorLocalOffset(MoveCloseDoor, false, 0, ETeleportType::None);
 			AddActorLocalRotation(CloseDoor, false, 0, ETeleportType::None);
+			
 			IsOpened = false;
 		}
 		else {
 			AddActorLocalRotation(OpenDoor, false, 0, ETeleportType::None);
+			AddActorLocalOffset(MoveOpenDoor, false, 0, ETeleportType::None);
+			
 			IsOpened = true;
 		}
 	}
