@@ -148,6 +148,12 @@ void AMyEnemy::BeginPlay()
 	
 }
 
+void AMyEnemy::SetSpecificAnimation(bool bIsPlaying)
+{
+
+
+}
+
 void AMyEnemy::OnHit()
 {
 	if(Alive) {
@@ -165,7 +171,6 @@ void AMyEnemy::AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	if (OtherActor->IsA<AMyArcher>()) {
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Player has taken Damage"));
 		Attacking = true;
-		OnGoingAttackAnim = true;
 		//Attack();
 		StopMovement();
 	}
@@ -229,7 +234,7 @@ void AMyEnemy::Tick(float DeltaTime)
 
 	Direction.Normalize();
 	HomeDirection.Normalize();
-	if (Detected && CurrentDistance < TotalDistance && Alive && !MovementStopped) {
+	if (Detected && CurrentDistance < TotalDistance && Alive && !MovementStopped && !OnGoingAttackAnim) {
 		FVector NewLocation = GetActorLocation() + Direction * Speed * DeltaTime;
 		CurrentDistance = (NewLocation - StartLocation).Size();
 
@@ -252,7 +257,7 @@ void AMyEnemy::Tick(float DeltaTime)
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Stopped"));
 	}
 
-	if (!Detected && !EnemyIsHome && HomeCurrentDistance < HomeTotalDistance && Alive && !MovementStopped) {
+	if (!Detected && !EnemyIsHome && HomeCurrentDistance < HomeTotalDistance && Alive && !MovementStopped && !OnGoingAttackAnim) {
 
 		FVector NewLocation = GetActorLocation() + HomeDirection * Speed * DeltaTime;
 		HomeCurrentDistance = (NewLocation - StartLocation).Size();
@@ -286,7 +291,6 @@ void AMyEnemy::Tick(float DeltaTime)
 	}
 	if (HP == 0 && Alive) {
 		Alive = false;
-		OnGoingAttackAnim = false;
 		//StopMovement();
 		DetectionArea->SetSphereRadius(0.0f);
 		//Mesh->SetSimulatePhysics(true);

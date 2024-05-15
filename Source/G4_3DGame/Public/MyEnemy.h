@@ -82,6 +82,9 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Animation")
 	bool OnGoingAttackAnim = false;
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Animation")
+	void SetSpecificAnimation(bool bIsPlaying);
+
 	UFUNCTION()
 	void OnHit();
 

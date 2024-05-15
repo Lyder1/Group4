@@ -37,8 +37,21 @@ void ARat::Move(const FInputActionValue& Value)
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr) {
-		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
-		AddMovementInput(GetActorRightVector(), MovementVector.X);
+		FVector Forward = GetActorForwardVector();
+		FVector Right = GetActorRightVector();
+
+		FVector Direction = (Forward * MovementVector.Y) + (Right * MovementVector.X);
+		Direction.Z = 0.0f;
+
+		if (!Direction.IsNearlyZero())
+		{
+			FRotator NewRotation = Direction.Rotation();
+			NewRotation.Yaw -= 90.0f;
+			GetMesh()->SetWorldRotation(NewRotation);
+		}
+
+		AddMovementInput(Forward, MovementVector.Y);
+		AddMovementInput(Right, MovementVector.X);
 	}
 }
 
