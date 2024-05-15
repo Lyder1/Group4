@@ -124,17 +124,11 @@ void AMyEnemy::WallDetectionCheck()
 void AMyEnemy::OnDetectionEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if(Alive && OtherActor->IsA<AMyArcher>()){
-		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::DetectionEndReaction, 10.0f, false);
-	}
-}
-
-void AMyEnemy::DetectionEndReaction()
-{
 		DetectionArea->SetSphereRadius(900.0f);
 		Detected = false;
 		EnemyIsHome = false;
 		Scanning = false;
+	}
 }
 
 
@@ -165,25 +159,21 @@ void AMyEnemy::AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	if (OtherActor->IsA<AMyArcher>()) {
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Player has taken Damage"));
 		Attacking = true;
-		//Attack();
 		StopMovement();
+		OnGoingAttackAnim = true;
+		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::AnimEnd, 01.5f, false);
 	}
 }
 
 void AMyEnemy::AttackEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	Attacking = false;
-	if(MovementStopped){
+	if(MovementStopped && !OnGoingAttackAnim){
 		StartMovement();
 	}
 
 }
-
-//void AMyEnemy::Attack() {
-//	if (Attacking) {
-//		Player->OnHit();
-//	}
-//}
 
 void AMyEnemy::StopMovement()
 {
@@ -214,10 +204,16 @@ void AMyEnemy::Die()
 	Destroy();
 }
 
+void AMyEnemy::AnimEnd()
+{
+	OnGoingAttackAnim = false;
+}
+
 // Called every frame
 void AMyEnemy::Tick(float DeltaTime)
 {
-	
+	FString BoolAsString = OnGoingAttackAnim ? TEXT("true") : TEXT("false");
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("The value of bValue is: %s"), *BoolAsString));
 	Super::Tick(DeltaTime);
 	StartLocation = GetActorLocation();
 	PlayerLocation = GetWorld()->GetFirstPlayerController()->GetCharacter()->GetActorLocation();
@@ -229,6 +225,7 @@ void AMyEnemy::Tick(float DeltaTime)
 
 	Direction.Normalize();
 	HomeDirection.Normalize();
+
 	if (Detected && CurrentDistance < TotalDistance && Alive && !MovementStopped && !OnGoingAttackAnim) {
 		FVector NewLocation = GetActorLocation() + Direction * Speed * DeltaTime;
 		CurrentDistance = (NewLocation - StartLocation).Size();
@@ -283,6 +280,9 @@ void AMyEnemy::Tick(float DeltaTime)
 	}
 	if (Scanning) {
 		WallDetectionCheck();
+	}
+	if (MovementStopped && !OnGoingAttackAnim) {
+		StartMovement();
 	}
 	if (HP == 0 && Alive) {
 		Alive = false;
