@@ -16,10 +16,9 @@ ARat::ARat()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	/*RatCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Rat CollisionBox"));
-	RootComponent = RatCollisionBox;*/
-	//RatCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Rat CollisionBox"));
-
+	InteractBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Rat CollisionBox"));
+	InteractBox->SetupAttachment(RootComponent);
+	
 	RatSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
 	RatSpringArm->SetupAttachment(GetMesh());
 
@@ -67,6 +66,19 @@ void ARat::LookAround(const FInputActionValue& Value)
 	}
 }
 
+void ARat::InteractOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	Interface = Cast<IInteractionInterface>(OtherActor);
+}
+
+void ARat::InputInteract()
+{
+	if (Interface)
+	{
+		Interface->InteractWithThis();
+	}
+}
+
 // Called when the game starts or when spawned
 void ARat::BeginPlay()
 {
@@ -80,6 +92,8 @@ void ARat::BeginPlay()
 			Subsystem->AddMappingContext(IMC, 0);
 		}
 	}
+
+	InteractBox->OnComponentBeginOverlap.AddDynamic(this, &ARat::InteractOnOverlap);
 	
 }
 

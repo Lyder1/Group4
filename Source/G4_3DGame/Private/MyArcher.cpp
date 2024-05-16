@@ -140,50 +140,58 @@ void AMyArcher::PlayFireAnimation()
 void AMyArcher::FireArrow()
 {
 	// Attempt to fire a projectile.
-	if (Ammo > 0 && AttackPrimed) {
-		if (ProjectileClass)
-		{
-			AnimFireArrow = true;
-			AnimReadyArrow = false;
-			AttackPrimed = false;
-			// Get the camera transform.
-			FVector CameraLocation;
-			FRotator CameraRotation;
-			GetActorEyesViewPoint(CameraLocation, CameraRotation);
-
-			// Set ArrowOrigin to spawn projectiles slightly in front of the camera.
-			ArrowOrigin.Set(100.0f, 0.0f, -50.0f);
-
-			// Transform MuzzleOffset from camera space to world space.
-			FVector OriginLocation = CameraLocation + FTransform(CameraRotation).TransformVector(ArrowOrigin);
-
-			// Skew the aim to be slightly upwards.
-			FRotator OriginRotation = CameraRotation;
-			OriginRotation.Pitch += 3.0f;
-
-			UWorld* World = GetWorld();
-			if (World)
+	if (Ammo > 0) {
+		if (AttackPrimed) {
+			if (ProjectileClass)
 			{
-				FActorSpawnParameters SpawnParams;
-				SpawnParams.Owner = this;
-				SpawnParams.Instigator = GetInstigator();
 
-				// Spawn the projectile at the muzzle.
-				AArrow* Projectile = World->SpawnActor<AArrow>(ProjectileClass, OriginLocation, OriginRotation, SpawnParams);
-				if (Projectile)
+				AnimFireArrow = true;
+				AnimReadyArrow = false;
+				AttackPrimed = false;
+
+				// Get the camera transform.
+				FVector CameraLocation;
+				FRotator CameraRotation;
+				GetActorEyesViewPoint(CameraLocation, CameraRotation);
+
+				// Set ArrowOrigin to spawn projectiles slightly in front of the camera.
+				ArrowOrigin.Set(100.0f, 0.0f, -50.0f);
+
+				// Transform MuzzleOffset from camera space to world space.
+				FVector OriginLocation = CameraLocation + FTransform(CameraRotation).TransformVector(ArrowOrigin);
+
+				// Skew the aim to be slightly upwards.
+				FRotator OriginRotation = CameraRotation;
+				OriginRotation.Pitch += 3.0f;
+
+				UWorld* World = GetWorld();
+				if (World)
 				{
-					// Set the projectile's initial trajectory.
-					FVector LaunchDirection = OriginRotation.Vector();
-					Projectile->FireInDirection(LaunchDirection);
-					Ammo--;
+
+					FActorSpawnParameters SpawnParams;
+					SpawnParams.Owner = this;
+					SpawnParams.Instigator = GetInstigator();
+
+					// Spawn the projectile at the muzzle.
+					AArrow* Projectile = World->SpawnActor<AArrow>(ProjectileClass, OriginLocation, OriginRotation, SpawnParams);
+
+					if (Projectile)
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("Shots fired"));
+						// Set the projectile's initial trajectory.
+						FVector LaunchDirection = OriginRotation.Vector();
+						Projectile->FireInDirection(LaunchDirection);
+						Ammo--;
+					}
 				}
+
 			}
-			
+			GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+			GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyArcher::AttackDelay, 1.0f, false);
+
+			}
 		}
-		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyArcher::AttackDelay, 1.0f, false);
 		
-	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("No Ammo"));
 	}

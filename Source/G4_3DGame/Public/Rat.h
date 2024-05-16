@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/BoxComponent.h"
+#include "InteractionInterface.h"
 #include "Rat.generated.h"
 
 struct FInputActionValue;
@@ -36,7 +37,7 @@ public:
 	USkeletalMeshComponent* RatMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
-	UBoxComponent* RatCollisionBox;
+	UBoxComponent* InteractBox;
 
 
 	// INPUT ACTIONS AND IMC
@@ -55,12 +56,22 @@ public:
 	class UInputAction* JumpAction;
 
 
+	// VARIABLES
+
+
+	IInteractionInterface* Interface = nullptr;
+
+
 	// FUNCTIONS
 
 
 	void Move(const FInputActionValue& Value);
 
 	void LookAround(const FInputActionValue& Value);
+
+	void InteractOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	void InputInteract();
 
 protected:
 	// Called when the game starts or when spawned
