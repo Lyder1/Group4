@@ -12,6 +12,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+
+float ChargeRate = 1.0f;
+
 // Sets default values
 AMyArcher::AMyArcher()
 {
@@ -99,6 +102,22 @@ void AMyArcher::Interact()
 {
 }
 
+void AMyArcher::ChargeArrow()
+{
+	/*for (int i = 0; i < 100; i++) 
+	{
+		ChargeRate *= i;
+	}*/
+
+	//while (1) 
+	//{
+	//	ChargeRate += 100;
+	//}
+
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Charging..."));
+	ChargeRate += 100;
+}
+
 void AMyArcher::FireArrow()
 {
 	// Attempt to fire a projectile.
@@ -133,7 +152,8 @@ void AMyArcher::FireArrow()
 				{
 					// Set the projectile's initial trajectory.
 					FVector LaunchDirection = OriginRotation.Vector();
-					Projectile->FireInDirection(LaunchDirection);
+					Projectile->FireInDirection(LaunchDirection, ChargeRate);
+					ChargeRate = 1.0f;
 					Ammo--;
 				}
 			}
@@ -215,6 +235,8 @@ void AMyArcher::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(LoadAction, ETriggerEvent::Triggered, this, &AMyArcher::InputLoad);
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AMyArcher::FireArrow);
+		//EnhancedInputComponent->BindAction(ChargeAction, ETriggerEvent::Ongoing, this, &AMyArcher::ChargeArrow);
+		EnhancedInputComponent->BindAction(ChargeAction, ETriggerEvent::Triggered, this, &AMyArcher::ChargeArrow);
 
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &AMyArcher::InputInteract);
 	}
