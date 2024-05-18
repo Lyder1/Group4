@@ -146,6 +146,7 @@ void AMyEnemy::StartMovement()
 
 void AMyEnemy::Die()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Should get destroyed"));
 	Destroy();
 }
 
