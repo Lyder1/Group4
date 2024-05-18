@@ -34,6 +34,8 @@ AMyEnemy::AMyEnemy()
 	AttackArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::AttackStart);
 	AttackArea->OnComponentEndOverlap.AddDynamic(this, &AMyEnemy::AttackEnd);
 
+	HitBox->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::ExplosionDamage);
+
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -128,6 +130,15 @@ void AMyEnemy::AttackEnd(UPrimitiveComponent* OverlappedComponent, AActor* Other
 	if(Alive){
 		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::StartMovement, 01.0f, false);
+	}
+}
+
+void AMyEnemy::ExplosionDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (Alive && OtherComp->ComponentHasTag("Exploded")) {
+		DetectionArea->SetSphereRadius(2000.0f);
+		Detected = true;
+		HP -= 5;
 	}
 }
 
