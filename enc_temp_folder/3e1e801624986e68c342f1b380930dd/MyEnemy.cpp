@@ -26,7 +26,7 @@ AMyEnemy::AMyEnemy()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	Mesh->SetupAttachment(RootComponent);
 
-	Speed = 50.0f;
+	Speed = 375.0f;
 
 	DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::OnDetectionBegin);
 	DetectionArea->OnComponentEndOverlap.AddDynamic(this, &AMyEnemy::OnDetectionEnd);
@@ -139,13 +139,14 @@ void AMyEnemy::StopMovement()
 
 void AMyEnemy::StartMovement()
 {
-	Speed = 50.0f;
+	Speed = 375.0f;
 	Attacking = false;
 	MovementStopped = false;
 }
 
 void AMyEnemy::Die()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Should get destroyed"));
 	Destroy();
 }
 
