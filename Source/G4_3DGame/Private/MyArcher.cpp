@@ -161,6 +161,7 @@ void AMyArcher::FireArrow()
 	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("No Ammo"));
+		ChargeRate = 1.0f;
 	}
 
 }
