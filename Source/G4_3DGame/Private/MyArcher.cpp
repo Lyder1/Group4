@@ -167,7 +167,14 @@ void AMyArcher::FireArrow()
 
 void AMyArcher::InteractOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("Overlapping"));
 	Interface = Cast<IInteractionInterface>(OtherActor);
+}
+
+void AMyArcher::InteractEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("Stopped Overlapping"));
+	Interface = nullptr;
 }
 
 void AMyArcher::InputInteract()
@@ -209,6 +216,7 @@ void AMyArcher::BeginPlay()
 	}
 
 	InteractBox->OnComponentBeginOverlap.AddDynamic(this, &AMyArcher::InteractOnOverlap);
+	InteractBox->OnComponentEndOverlap.AddDynamic(this, &AMyArcher::InteractEnd);
 }
 
 // Called every frame
