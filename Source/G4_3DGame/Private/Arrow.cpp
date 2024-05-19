@@ -80,7 +80,7 @@ void AArrow::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 void AArrow::FireInDirection(const FVector& ShootDirection, float ChargeRate)
 {
 	ArrowMovementComponent->Velocity = ShootDirection * ChargeRate;
-	GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-	GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AArrow::SelfDestruct, 10.0f, false);
+	//GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+	//GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AArrow::SelfDestruct, 10.0f, false);
 }
 
