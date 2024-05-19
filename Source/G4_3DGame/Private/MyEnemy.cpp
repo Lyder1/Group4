@@ -26,7 +26,7 @@ AMyEnemy::AMyEnemy()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	Mesh->SetupAttachment(RootComponent);
 
-	Speed = 50.0f;
+	Speed = 30.0f;
 
 	DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::OnDetectionBegin);
 	DetectionArea->OnComponentEndOverlap.AddDynamic(this, &AMyEnemy::OnDetectionEnd);
@@ -103,6 +103,7 @@ void AMyEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	
 }
 
 void AMyEnemy::OnHit()
@@ -173,6 +174,9 @@ void AMyEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	StartLocation = GetActorLocation();
 	PlayerLocation = GetWorld()->GetFirstPlayerController()->GetCharacter()->GetActorLocation();
+	//PlayerLocation = Player->GetActorLocation();
+	/*UGameplayStatics::GetActorOfClass(GetWorld(), ArcherInstance);
+	AMyArcher* TargetArcher: ArcherInstance = */
 	Direction = PlayerLocation - StartLocation;
 	TotalDistance = Direction.Size();
 

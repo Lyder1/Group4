@@ -2,8 +2,10 @@
 
 #pragma once
 
+
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Kismet/GameplayStatics.h"
 #include "MyArcher.h"
 #include "TimerManager.h"
 #include "MyEnemy.generated.h"
@@ -21,7 +23,15 @@ public:
 protected:
 	FTimerHandle DelayTimerHandle;
 
+	
 	AMyArcher* Player;
+
+	/*UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	TSubclassOf<class AMyArcher> ArcherInstance;*/
+
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Instance")
+	AActor* ActorInstance;*/
+
 	float MaxGroundCheckDistance = 50.0f;
 	float TotalDistance;
 	float CurrentDistance = 0.0f;
