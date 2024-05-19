@@ -8,6 +8,7 @@
 #include "Arrow.h"
 #include "InteractionInterface.h"
 #include "TimerManager.h"
+
 #include "MyArcher.generated.h"
 
 struct FInputActionValue;
@@ -100,6 +101,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	class UInputAction* FireAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	class UInputAction* ChargeAction;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = " Input", meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LoadAction;
 
@@ -134,8 +138,15 @@ public:
 	void FireArrow();
 
 	UFUNCTION()
+	void ChargeArrow();
+
+	UFUNCTION()
 	void InteractOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
 		int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void InteractEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
+		int32 OtherbodyIndex);
 
 	void InputInteract();
 

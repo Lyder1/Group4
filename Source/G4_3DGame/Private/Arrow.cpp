@@ -11,20 +11,6 @@ AArrow::AArrow()
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSceneComponent"));
-	
-	// Use this component to drive this projectile's movement.
-	ArrowMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-	ArrowMovementComponent->SetUpdatedComponent(RootComponent);
-	ArrowMovementComponent->InitialSpeed = 7000.0f;
-	ArrowMovementComponent->MaxSpeed = 7000.0f;
-	ArrowMovementComponent->bRotationFollowsVelocity = true;
-	ArrowMovementComponent->bShouldBounce = false;
-	//ArrowMovementComponent->Bounciness = 0.3f;
-	ArrowMovementComponent->ProjectileGravityScale = 1.0f;
-
-	ArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow Mesh"));
-	ArrowMesh->SetupAttachment(RootComponent);
-	
 	// Use a sphere as a simple collision representation.
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	// Set the sphere's collision profile name to "Projectile".
@@ -32,8 +18,31 @@ AArrow::AArrow()
 	// Set the sphere's collision radius.
 	CollisionComponent->InitSphereRadius(15.0f);
 	// Set the root component to be the collision component.
-	CollisionComponent->SetupAttachment(RootComponent);
+	RootComponent = CollisionComponent;
+	
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AArrow::OnHit);
+
+	// Use this component to drive this projectile's movement.
+	ArrowMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
+	ArrowMovementComponent->SetUpdatedComponent(CollisionComponent);
+	ArrowMovementComponent->InitialSpeed = 100.0f;
+	ArrowMovementComponent->MaxSpeed = 10000.0f;
+	ArrowMovementComponent->bRotationFollowsVelocity = true;
+	ArrowMovementComponent->bShouldBounce = false;
+	//ArrowMovementComponent->Bounciness = 0.3f;
+	ArrowMovementComponent->ProjectileGravityScale = 1.0f;
+
+	ArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow Mesh"));
+	ArrowMesh->SetupAttachment(CollisionComponent);
+
+
+	//lifespan of arrow after being fired
+	InitialLifeSpan = 3.0f;
+
+	/*if (!NewArrowMesh) {
+		NewArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow Mesh"));
+		NewArrowMesh->SetupAttachment(ArrowMesh);
+	}*/
 }
 
 // Called when the game starts or when spawned
@@ -68,9 +77,9 @@ void AArrow::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	Destroy();
 }
 
-void AArrow::FireInDirection(const FVector& ShootDirection)
+void AArrow::FireInDirection(const FVector& ShootDirection, float ChargeRate)
 {
-	ArrowMovementComponent->Velocity = ShootDirection * ArrowMovementComponent->InitialSpeed;
+	ArrowMovementComponent->Velocity = ShootDirection * ChargeRate;
 	GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
 	GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AArrow::SelfDestruct, 10.0f, false);
 }

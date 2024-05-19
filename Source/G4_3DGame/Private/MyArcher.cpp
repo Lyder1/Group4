@@ -12,6 +12,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+
+float ChargeRate = 1.0f;
+
 // Sets default values
 AMyArcher::AMyArcher()
 {
@@ -137,6 +140,22 @@ void AMyArcher::PlayFireAnimation()
 }
 
 
+void AMyArcher::ChargeArrow()
+{
+	/*for (int i = 0; i < 100; i++) 
+	{
+		ChargeRate *= i;
+	}*/
+
+	//while (1) 
+	//{
+	//	ChargeRate += 100;
+	//}
+
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Charging..."));
+	ChargeRate += 100;
+}
+
 void AMyArcher::FireArrow()
 {
 	// Attempt to fire a projectile.
@@ -180,9 +199,11 @@ void AMyArcher::FireArrow()
 						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("Shots fired"));
 						// Set the projectile's initial trajectory.
 						FVector LaunchDirection = OriginRotation.Vector();
-						Projectile->FireInDirection(LaunchDirection);
+						Projectile->FireInDirection(LaunchDirection, ChargeRate);
+						ChargeRate = 1.0f;
 						Ammo--;
 					}
+					
 				}
 
 			}
@@ -194,13 +215,21 @@ void AMyArcher::FireArrow()
 		
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("No Ammo"));
+		ChargeRate = 1.0f;
 	}
 
 }
 
 void AMyArcher::InteractOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("Overlapping"));
 	Interface = Cast<IInteractionInterface>(OtherActor);
+}
+
+void AMyArcher::InteractEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("Stopped Overlapping"));
+	Interface = nullptr;
 }
 
 void AMyArcher::InputInteract()
@@ -242,6 +271,7 @@ void AMyArcher::BeginPlay()
 	}
 
 	InteractBox->OnComponentBeginOverlap.AddDynamic(this, &AMyArcher::InteractOnOverlap);
+	InteractBox->OnComponentEndOverlap.AddDynamic(this, &AMyArcher::InteractEnd);
 }
 
 // Called every frame
@@ -271,6 +301,8 @@ void AMyArcher::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &AMyArcher::PlayFireAnimation);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AMyArcher::FireArrow);
+		//EnhancedInputComponent->BindAction(ChargeAction, ETriggerEvent::Ongoing, this, &AMyArcher::ChargeArrow);
+		EnhancedInputComponent->BindAction(ChargeAction, ETriggerEvent::Triggered, this, &AMyArcher::ChargeArrow);
 
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &AMyArcher::InputInteract);
 	}

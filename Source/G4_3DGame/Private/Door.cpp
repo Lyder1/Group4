@@ -53,5 +53,6 @@ void ADoor::InteractWithThis()
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Emerald, TEXT("Door is locked"));
 	}
 	
+	
 }
 

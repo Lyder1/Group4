@@ -48,6 +48,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door | key")
 	ADoorKey* LinkedKey;
 
+	/*UPROPERTY(EditDefaultsOnly, Category = "Door | Key")
+	TSubclassOf<class ADoorKey> LinkedKey;*/
+
 
 	// FUNCTIONS
 
