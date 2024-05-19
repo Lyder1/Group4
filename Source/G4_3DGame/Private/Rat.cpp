@@ -68,7 +68,14 @@ void ARat::LookAround(const FInputActionValue& Value)
 
 void ARat::InteractOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("Overlapping"));
 	Interface = Cast<IInteractionInterface>(OtherActor);
+}
+
+void ARat::InteractEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherbodyIndex)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("Stopped Overlapping"));
+	Interface = nullptr;
 }
 
 void ARat::InputInteract()
@@ -94,6 +101,7 @@ void ARat::BeginPlay()
 	}
 
 	InteractBox->OnComponentBeginOverlap.AddDynamic(this, &ARat::InteractOnOverlap);
+	InteractBox->OnComponentEndOverlap.AddDynamic(this, &ARat::InteractEnd);
 	
 }
 
@@ -118,6 +126,8 @@ void ARat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &ARat::InputInteract);
 	}
 
 }
