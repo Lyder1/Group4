@@ -81,10 +81,7 @@ public:
 	// INPUT ACTIONS AND IMC
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	bool AnimReadyArrow = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	bool AnimFireArrow = false;
+	bool IsCharging = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	class UInputMappingContext* IMC;

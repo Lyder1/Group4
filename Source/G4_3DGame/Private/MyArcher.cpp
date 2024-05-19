@@ -50,7 +50,7 @@ void AMyArcher::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (AnimReadyArrow) {
+	if (IsCharging) {
 		MovementVector *= 0.5;
 	}
 
@@ -133,13 +133,6 @@ void AMyArcher::AttackDelay()
 	AttackPrimed = true;
 }
 
-void AMyArcher::PlayFireAnimation()
-{
-	AnimFireArrow = false;
-	AnimReadyArrow = true;
-}
-
-
 void AMyArcher::ChargeArrow()
 {
 	/*for (int i = 0; i < 100; i++) 
@@ -154,20 +147,17 @@ void AMyArcher::ChargeArrow()
 
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Charging..."));
 	ChargeRate += 100;
+	IsCharging = true;
 }
 
 void AMyArcher::FireArrow()
 {
 	// Attempt to fire a projectile.
+	IsCharging = false;
 	if (Ammo > 0) {
 		if (AttackPrimed) {
 			if (ProjectileClass)
 			{
-
-				AnimFireArrow = true;
-				AnimReadyArrow = false;
-				AttackPrimed = false;
-
 				// Get the camera transform.
 				FVector CameraLocation;
 				FRotator CameraRotation;
@@ -299,7 +289,6 @@ void AMyArcher::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 		EnhancedInputComponent->BindAction(LoadAction, ETriggerEvent::Triggered, this, &AMyArcher::InputLoad);
 
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &AMyArcher::PlayFireAnimation);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AMyArcher::FireArrow);
 		//EnhancedInputComponent->BindAction(ChargeAction, ETriggerEvent::Ongoing, this, &AMyArcher::ChargeArrow);
 		EnhancedInputComponent->BindAction(ChargeAction, ETriggerEvent::Triggered, this, &AMyArcher::ChargeArrow);
