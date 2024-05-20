@@ -43,30 +43,28 @@ AMyArcher::AMyArcher()
 
 void AMyArcher::Die()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Dead"));
+	SetActorTickEnabled(false);
 }
 
 void AMyArcher::Move(const FInputActionValue& Value)
 {
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	if(!Dead){
+		FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (IsCharging) {
-		MovementVector *= 0.5;
-	}
+		if (IsCharging) {
+			MovementVector *= 0.5;
+		}
 
-	if (Controller != nullptr) {
-		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
-		AddMovementInput(GetActorRightVector(), MovementVector.X);
+		if (Controller != nullptr) {
+			AddMovementInput(GetActorForwardVector(), MovementVector.Y);
+			AddMovementInput(GetActorRightVector(), MovementVector.X);
+		}
 	}
 }
 
 void AMyArcher::OnHit()
 {
-	//if (!Damaged) {
-		Damaged = true;
-		PlayerHealth--;
-		//GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyArcher::DamageDelay, 1.5f, false);
-	//}
+	PlayerHealth--;
 	FString VariableString = FString::Printf(TEXT("Remaining health: %.2f"), PlayerHealth);
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, VariableString);
@@ -121,11 +119,6 @@ void AMyArcher::SaveGame()
 
 void AMyArcher::Interact()
 {
-}
-
-void AMyArcher::DamageDelay()
-{
-	Damaged = false;
 }
 
 void AMyArcher::ChargeArrow()
@@ -261,6 +254,7 @@ void AMyArcher::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if (PlayerHealth <= 0) {
+		Dead = true;
 		Die();
 	}
 }

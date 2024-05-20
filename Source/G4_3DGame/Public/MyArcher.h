@@ -77,6 +77,7 @@ public:
 	bool Damaged = false;
 	bool IsMoving = false;
 	bool AttackPrimed = true;
+	bool Dead = false;
 
 
 	// INPUT ACTIONS AND IMC
@@ -125,8 +126,6 @@ public:
 	void SaveGame();
 
 	void Interact();
-
-	void DamageDelay();
 
 	UFUNCTION()
 	void FireArrow();
