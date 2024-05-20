@@ -35,6 +35,7 @@ void ADoor::Tick(float DeltaTime)
 void ADoor::InteractWithThis()
 {
 	if (LinkedKey && LinkedKey->CheckIfHeld()) {
+		LinkedKey->IsHeld = true;
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Emerald, TEXT("Door unlocked"));
 		if (IsOpened) {
 			AddActorLocalOffset(MoveCloseDoor, false, 0, ETeleportType::None);
