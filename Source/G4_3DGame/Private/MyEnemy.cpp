@@ -56,17 +56,17 @@ void AMyEnemy::OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor
 
 void AMyEnemy::WallDetectionCheck()
 {
-	// Check if there are any potential targets within the detection radius (sphere collision)
+	//gets all actos withing detecionarea
 	TArray<AActor*> OverlappingActors;
 	DetectionArea->GetOverlappingActors(OverlappingActors);
 	for (AActor* Actor : OverlappingActors)
 	{
-		// Check if the overlapped actor is the player		
+		// Check if any of overlapped actors is the player		
 		AMyArcher* PlayerCharacter = Cast<AMyArcher>(Actor);
 		if (PlayerCharacter)
 		{
 			Scanning = true;
-			// Perform a line trace from the enemy to the player
+			// Perform a line trace from the enemy to the player to see if there is a wall between them and it should not be able to "see" the player
 			FHitResult HitResult;
 			LTStartLocation = GetActorLocation() + FVector(0, 0, 50);
 			LTEndLocation = PlayerCharacter->GetActorLocation();
@@ -76,6 +76,7 @@ void AMyEnemy::WallDetectionCheck()
 			// Perform the line trace
 			bool HitWall = GetWorld()->LineTraceSingleByChannel(HitResult, LTStartLocation, LTEndLocation, ECC_Visibility, Params);
 
+			//Starts chasing if the line trace hits the player
 			if (HitResult.GetActor() == PlayerCharacter) {
 				if (Alive) {
 					DetectionArea->SetSphereRadius(1750.0f);
@@ -93,6 +94,7 @@ void AMyEnemy::WallDetectionCheck()
 
 void AMyEnemy::OnDetectionEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	//stops chasing
 	if(Alive && OtherActor->IsA<AMyArcher>()){
 		DetectionArea->SetSphereRadius(900.0f);
 		Detected = false;
@@ -114,6 +116,7 @@ void AMyEnemy::BeginPlay()
 
 void AMyEnemy::OnHit()
 {
+	//this function gets called from MyArcher.cpp if the archer hits the enemy
 	if(Alive) {
 		DetectionArea->SetSphereRadius(2000.0f);
 		Detected = true;
@@ -123,6 +126,7 @@ void AMyEnemy::OnHit()
 
 void AMyEnemy::AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	//if player enters attack area it deals damage to archer
 	Player = Cast<AMyArcher>(OtherActor);
 	if (OtherActor->IsA<AMyArcher>() && Alive) {
 		MidSwing = false;
