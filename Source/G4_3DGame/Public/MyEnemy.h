@@ -21,7 +21,6 @@ public:
 protected:
 	FTimerHandle DelayTimerHandle;
 
-	AMyArcher* Player;
 	float MaxGroundCheckDistance = 50.0f;
 	float TotalDistance;
 	float CurrentDistance = 0.0f;
@@ -46,6 +45,8 @@ protected:
 	bool DelayedRotation = false;
 	bool Alive = true;
 	bool MovementStopped = false;
+	bool IsChasing = false;
+	bool MidSwing = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	class USceneComponent* RootScene;
@@ -58,6 +59,9 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	AMyArcher* Player;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	USkeletalMeshComponent* Mesh;
 
@@ -104,6 +108,7 @@ public:
 	UFUNCTION()
 	void ExplosionDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+
 	//UFUNCTION()
 //	void Attack();
 
@@ -111,6 +116,8 @@ public:
 	void StartMovement();
 	void Die();
 	void AnimEnd();
+	FVector GetPlayerLocation(UWorld* World);
+	void MidSwingDelay();
 
 
 	// Called every frame

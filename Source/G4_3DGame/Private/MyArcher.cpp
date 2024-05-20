@@ -62,11 +62,11 @@ void AMyArcher::Move(const FInputActionValue& Value)
 
 void AMyArcher::OnHit()
 {
-	if (!Damaged) {
+	//if (!Damaged) {
 		Damaged = true;
 		PlayerHealth--;
-		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyArcher::DamageDelay, 1.5f, false);
-	}
+		//GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyArcher::DamageDelay, 1.5f, false);
+	//}
 	FString VariableString = FString::Printf(TEXT("Remaining health: %.2f"), PlayerHealth);
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, VariableString);
@@ -128,11 +128,6 @@ void AMyArcher::DamageDelay()
 	Damaged = false;
 }
 
-void AMyArcher::AttackDelay()
-{
-	AttackPrimed = true;
-}
-
 void AMyArcher::ChargeArrow()
 {
 	/*for (int i = 0; i < 100; i++) 
@@ -155,7 +150,6 @@ void AMyArcher::FireArrow()
 	// Attempt to fire a projectile.
 	IsCharging = false;
 	if (Ammo > 0) {
-		if (AttackPrimed) {
 			if (ProjectileClass)
 			{
 				// Get the camera transform.
@@ -193,12 +187,10 @@ void AMyArcher::FireArrow()
 						ChargeRate = 1.0f;
 						Ammo--;
 					}
-					
-				}
 
-			}
-			GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-			GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyArcher::AttackDelay, 1.0f, false);
+
+
+				}
 
 			}
 		}

@@ -8,6 +8,7 @@
 #include "Arrow.h"
 #include "InteractionInterface.h"
 #include "TimerManager.h"
+#include "Engine/World.h"
 
 #include "MyArcher.generated.h"
 
@@ -126,10 +127,6 @@ public:
 	void Interact();
 
 	void DamageDelay();
-
-	void AttackDelay();
-
-	void PlayFireAnimation();
 
 	UFUNCTION()
 	void FireArrow();
