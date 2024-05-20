@@ -30,15 +30,12 @@ AMyEnemy::AMyEnemy()
 
 	Speed = MaxSpeed;
 
-	//there a multible components in the enemy. the detection area is for finding the player. and when the detection area overlaps with something and stops overlapping it calls these two functions
 	DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::OnDetectionBegin);
 	DetectionArea->OnComponentEndOverlap.AddDynamic(this, &AMyEnemy::OnDetectionEnd);
 
-	//Same thing here the attack area is where the enemy is able to attack the player. so when the player goes into or leaves the attack area it calls these functions
 	AttackArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::AttackStart);
 	AttackArea->OnComponentEndOverlap.AddDynamic(this, &AMyEnemy::AttackEnd);
 
-	//This is just here so that the player also takes damage from explosive barrels
 	HitBox->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::ExplosionDamage);
 
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -50,7 +47,6 @@ AMyEnemy::AMyEnemy()
 
 void AMyEnemy::OnDetectionBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
 	WallDetectionCheck();
 }
 
