@@ -104,6 +104,7 @@ void AMyEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	
 }
 
 void AMyEnemy::OnHit()
@@ -196,6 +197,7 @@ void AMyEnemy::Tick(float DeltaTime)
 	
 	Super::Tick(DeltaTime);
 	StartLocation = GetActorLocation();
+	PlayerLocation = GetWorld()->GetFirstPlayerController()->GetCharacter()->GetActorLocation();
 	Direction = PlayerLocation - StartLocation;
 	PlayerLocation = GetPlayerLocation(GetWorld());
 	TotalDistance = Direction.Size();
