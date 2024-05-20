@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "MySaveGame.h"
 #include "Kismet/GameplayStatics.h"
+#include "EngineUtils.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -62,11 +63,11 @@ void AMyArcher::Move(const FInputActionValue& Value)
 
 void AMyArcher::OnHit()
 {
-	if (!Damaged) {
+	//if (!Damaged) {
 		Damaged = true;
 		PlayerHealth--;
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyArcher::DamageDelay, 1.5f, false);
-	}
+	//}
 	FString VariableString = FString::Printf(TEXT("Remaining health: %.2f"), PlayerHealth);
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, VariableString);
@@ -128,10 +129,6 @@ void AMyArcher::DamageDelay()
 	Damaged = false;
 }
 
-void AMyArcher::AttackDelay()
-{
-	AttackPrimed = true;
-}
 
 void AMyArcher::ChargeArrow()
 {
@@ -155,7 +152,6 @@ void AMyArcher::FireArrow()
 	// Attempt to fire a projectile.
 	IsCharging = false;
 	if (Ammo > 0) {
-		if (AttackPrimed) {
 			if (ProjectileClass)
 			{
 				// Get the camera transform.
@@ -164,7 +160,7 @@ void AMyArcher::FireArrow()
 				GetActorEyesViewPoint(CameraLocation, CameraRotation);
 
 				// Set ArrowOrigin to spawn projectiles slightly in front of the camera.
-				ArrowOrigin.Set(100.0f, 0.0f, -50.0f);
+				ArrowOrigin.Set(100.0f, 0.0f, -10.0f);
 
 				// Transform MuzzleOffset from camera space to world space.
 				FVector OriginLocation = CameraLocation + FTransform(CameraRotation).TransformVector(ArrowOrigin);
@@ -195,10 +191,6 @@ void AMyArcher::FireArrow()
 					}
 					
 				}
-
-			}
-			GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-			GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyArcher::AttackDelay, 1.0f, false);
 
 			}
 		}
@@ -268,9 +260,11 @@ void AMyArcher::BeginPlay()
 void AMyArcher::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	if (PlayerHealth <= 0) {
 		Die();
 	}
+
 }
 
 // Called to bind functionality to input
