@@ -9,6 +9,8 @@
 // Sets default values
 AMyEnemy::AMyEnemy()
 {
+	CurrentHealth = MaxHealth;
+
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = RootScene;
 
@@ -26,7 +28,7 @@ AMyEnemy::AMyEnemy()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	Mesh->SetupAttachment(RootComponent);
 
-	Speed = 550.0f;
+	Speed = MaxSpeed;
 
 	DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::OnDetectionBegin);
 	DetectionArea->OnComponentEndOverlap.AddDynamic(this, &AMyEnemy::OnDetectionEnd);
@@ -111,7 +113,7 @@ void AMyEnemy::OnHit()
 	if(Alive) {
 		DetectionArea->SetSphereRadius(2000.0f);
 		Detected = true;
-		HP--;
+		CurrentHealth--;
 	}
 }
 
@@ -140,7 +142,7 @@ void AMyEnemy::ExplosionDamage(UPrimitiveComponent* OverlappedComponent, AActor*
 	if (Alive && OtherComp->ComponentHasTag("Exploded")) {
 		DetectionArea->SetSphereRadius(2000.0f);
 		Detected = true;
-		HP -= 5;
+		CurrentHealth -= 5;
 	}
 }
 
@@ -152,7 +154,7 @@ void AMyEnemy::StopMovement()
 
 void AMyEnemy::StartMovement()
 {
-	Speed = 550.0f;
+	Speed = MaxSpeed;
 	Attacking = false;
 	MovementStopped = false;
 }
@@ -236,10 +238,10 @@ void AMyEnemy::Tick(float DeltaTime)
 		WallDetectionCheck();
 	}
 
-	if (HP == 0 && Alive) {
+	if (CurrentHealth == 0 && Alive) {
 		Alive = false;
 		DetectionArea->SetSphereRadius(0.0f);
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("HP: %d"), HP));  // Debug message
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("HP: %d"), CurrentHealth));  // Debug message
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Alive status: %d"), Alive));  // Debug message
 		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::Die, 05.0f, false);

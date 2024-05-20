@@ -21,6 +21,7 @@ public:
 protected:
 	FTimerHandle DelayTimerHandle;
 
+	float MaxSpeed = 300.0f;
 	float MaxGroundCheckDistance = 50.0f;
 	float TotalDistance;
 	float CurrentDistance = 0.0f;
@@ -52,7 +53,10 @@ protected:
 	class USceneComponent* RootScene;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
-	int HP = 5;
+	float MaxHealth = 5;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentHealth;
 
 
 	// Called when the game starts or when spawned
