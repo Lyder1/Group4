@@ -41,11 +41,7 @@ AMyArcher::AMyArcher()
 	GetCharacterMovement()->JumpZVelocity = 600.0f;
 }
 
-void AMyArcher::Die()
-{
-	SetActorTickEnabled(false);
-}
-
+//movement function reads keyboard inputs (wasd)
 void AMyArcher::Move(const FInputActionValue& Value)
 {
 	if(!Dead){
@@ -62,14 +58,13 @@ void AMyArcher::Move(const FInputActionValue& Value)
 	}
 }
 
+//decreases health if hit. this function gets called from enemy.cpp
 void AMyArcher::OnHit()
 {
 	PlayerHealth--;
-	FString VariableString = FString::Printf(TEXT("Remaining health: %.2f"), PlayerHealth);
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, VariableString);
 }
 
+//look function, reads mouse input to change camera direciton
 void AMyArcher::LookAround(const FInputActionValue& Value)
 {
 	FVector2D LookAroundVector = Value.Get<FVector2D>();
@@ -259,7 +254,7 @@ void AMyArcher::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (PlayerHealth <= 0) {
 		Dead = true;
-		Die();
+		//Die();
 	}
 }
 

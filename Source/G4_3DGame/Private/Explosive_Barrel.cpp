@@ -31,6 +31,7 @@ AExplosive_Barrel::AExplosive_Barrel()
 	ExplosionRadius = 300.0f;
 	Exploded = false;
 
+	//calls on hit function if there is a collsion overlap
 	HitBox->OnComponentBeginOverlap.AddDynamic(this, &AExplosive_Barrel::OnHit);
 }
 
@@ -43,19 +44,21 @@ void AExplosive_Barrel::BeginPlay()
 
 void AExplosive_Barrel::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	//it checks if the overlapping compoent has the tag "arrow" and if it does, it calls the explode function
 	if (!Exploded && (OtherComp->ComponentHasTag("Arrow")))
 	{
 		Explode();
 	}
 }
 
+//fully destroys the rest of itself after explosion
 void AExplosive_Barrel::SoundRemoved()
 {
 	Destroy();
 }
 
 void AExplosive_Barrel::Explode()
-{	
+{	//triggers the eXplosion effect, explosion sound effect, inreases its collsion radius to work as the explosion radius and gives itself the tag "Explode" so that other objects can react
 	if(ExplosionEffect){
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 		ExplosionSound->Play();
@@ -64,11 +67,7 @@ void AExplosive_Barrel::Explode()
 
 	}
 
-	TArray<AActor*> IgnoreActors;
-	IgnoreActors.Add(this);
-
-	UGameplayStatics::ApplyRadialDamage(GetWorld(), ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoreActors, this);
-
+	//with exploded turned true the explode function cannot be called again, destroys the mesh, and triggers a countdown to call the SoundRemoved() that destroys the rest of the actor
 	Exploded = true;
 
 	Mesh->DestroyComponent();

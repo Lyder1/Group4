@@ -20,6 +20,7 @@ ABreakableWall::ABreakableWall()
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
 	CollisionComponent->SetupAttachment(RootComponent);
 
+	//calls explode function if collision overlap
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ABreakableWall::Explode);
 
 }
@@ -32,7 +33,7 @@ void ABreakableWall::BeginPlay()
 }
 
 void ABreakableWall::Explode(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
+{//if the component that overlaps has the tag "exploded" it gets destroyed, i tried getting the fracture system to work, but was unable to
 	if (OtherComp->ComponentHasTag("Exploded")) {
 		Destroy();
 	}

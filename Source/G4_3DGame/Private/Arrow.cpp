@@ -58,11 +58,6 @@ void AArrow::Tick(float DeltaTime)
 
 }
 
-void AArrow::SelfDestruct()
-{
-	Destroy();
-}
-
 void AArrow::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherComp->GetOwner() == this || OtherComp->ComponentHasTag("DetectionArea") || (OtherComp->ComponentHasTag("AttackArea"))) {
@@ -80,7 +75,5 @@ void AArrow::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 void AArrow::FireInDirection(const FVector& ShootDirection, float ChargeRate)
 {
 	ArrowMovementComponent->Velocity = ShootDirection * ChargeRate;
-	//GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-	//GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AArrow::SelfDestruct, 10.0f, false);
 }
 

@@ -112,9 +112,6 @@ public:
 
 	// FUNCTIONS
 
-	UFUNCTION()
-	void Die();
-
 	void Move(const FInputActionValue& Value);
 
 	void OnHit();

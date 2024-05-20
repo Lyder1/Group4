@@ -38,7 +38,7 @@ AMyEnemy::AMyEnemy()
 	AttackArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::AttackStart);
 	AttackArea->OnComponentEndOverlap.AddDynamic(this, &AMyEnemy::AttackEnd);
 
-	//This is just here so that the player also takes damage from explosive barrels
+	//calls function to take explosion damage
 	HitBox->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::ExplosionDamage);
 
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -148,10 +148,8 @@ void AMyEnemy::AttackEnd(UPrimitiveComponent* OverlappedComponent, AActor* Other
 
 void AMyEnemy::ExplosionDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//once again the main reason hitbox component here is so that 
+	//if enemy is inside explosion radius it will take 5 damage (die)
 	if (Alive && OtherComp->ComponentHasTag("Exploded")) {
-		DetectionArea->SetSphereRadius(2000.0f);
-		Detected = true;
 		CurrentHealth -= 5;
 	}
 }
@@ -233,7 +231,7 @@ void AMyEnemy::Tick(float DeltaTime)
 		FRotator TargetRotation = (PlayerLocation - NewLocation).Rotation() - FRotator(0.0f, 90.0f, 0.0f);
 		SetActorRotation(FRotator(0.0f, TargetRotation.Yaw, 0.0f));
 	}
-	//restricts the damage the archer can get
+	//calls the OnHit() function, and it is restricted to only be able to call the onhit() once every 1.5 seconds
 	if (Attacking && !MidSwing) {
 		MidSwing = true;
 		Player->OnHit();
