@@ -133,6 +133,8 @@ void AMyArcher::ChargeArrow()
 	//	ChargeRate += 100;
 	//}
 
+	ArcherSpringArm->TargetArmLength = 100.0f;
+	ArcherSpringArm->SocketOffset.Set(0, 70.0f, 70.0f);
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Charging..."));
 	ChargeRate += 100;
 	IsCharging = true;
@@ -178,6 +180,8 @@ void AMyArcher::FireArrow()
 						FVector LaunchDirection = OriginRotation.Vector();
 						Projectile->FireInDirection(LaunchDirection, ChargeRate);
 						ChargeRate = 1.0f;
+						ArcherSpringArm->TargetArmLength = 300.0f;
+						ArcherSpringArm->SocketOffset.Set(0, 70.0f, 50.0f);
 						Ammo--;
 					}
 
