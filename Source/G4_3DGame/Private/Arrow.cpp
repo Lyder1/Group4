@@ -57,18 +57,21 @@ void AArrow::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
+//determines if the arrow hits the player and handles damage
 void AArrow::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	//checks if the detected components is eiter the arrow, the enemy detection area or the enemy attack area
 	if (OtherComp->GetOwner() == this || OtherComp->ComponentHasTag("DetectionArea") || (OtherComp->ComponentHasTag("AttackArea"))) {
 		return;
 	}
+	//checks if the hit component is the Enemy hitbox by looking for the tag "hitbox". it calls Enemy OnHit() function if the component has the right tag and then destroys itself
 	if (OtherComp->ComponentHasTag("HitBox")) {
 		AMyEnemy* Enemy = Cast<AMyEnemy>(OtherActor);
 		Enemy->OnHit();
 		Destroy();
 
 	}
+	//if the arrow hits anything not specified it destroys itself
 	Destroy();
 }
 
