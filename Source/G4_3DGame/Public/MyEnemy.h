@@ -25,25 +25,13 @@ protected:
 	float MaxGroundCheckDistance = 50.0f;
 	float TotalDistance;
 	float CurrentDistance = 0.0f;
-	float HomeTotalDistance;
-	float HomeCurrentDistance = 0.0f;
-	float RevertSpeed;
 	FVector Direction;
 	FVector PlayerLocation;
 	FVector LTStartLocation;
 	FVector LTEndLocation;
 	FVector StartLocation;
-	FVector HomeDirection;
-	FVector HomeLocation;
 	FVector CurrentLocation;
-	FRotator HomeRotation;
-	FVector RevertDirection;
-	FVector RevertPlayerLocation;
-	FVector RevertStartLocation;
 	bool Scanning = false;
-	bool Escaping = false;
-	bool EnemyIsHome;
-	bool DelayedRotation = false;
 	bool Alive = true;
 	bool MovementStopped = false;
 	bool IsChasing = false;
@@ -87,10 +75,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MoveActor")
 	float Speed;
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Animation")
-	bool OnGoingAttackAnim = false;
-
-
 	UFUNCTION()
 	void OnHit();
 
@@ -112,16 +96,12 @@ public:
 	UFUNCTION()
 	void ExplosionDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-
-	//UFUNCTION()
-//	void Attack();
-
 	void StopMovement();
 	void StartMovement();
 	void Die();
 	void AnimEnd();
-	FVector GetPlayerLocation(UWorld* World);
 	void MidSwingDelay();
+	FVector GetPlayerLocation(UWorld* World);
 
 
 	// Called every frame

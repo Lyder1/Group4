@@ -59,6 +59,7 @@ void AMyEnemy::WallDetectionCheck()
 	//gets all actos withing detecionarea
 	TArray<AActor*> OverlappingActors;
 	DetectionArea->GetOverlappingActors(OverlappingActors);
+
 	for (AActor* Actor : OverlappingActors)
 	{
 		// Check if any of overlapped actors is the player		
@@ -126,12 +127,11 @@ void AMyEnemy::OnHit()
 
 void AMyEnemy::AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//if player enters attack area it deals damage to archer
+	//if player enters attack area it deals damage to archer by turning "Attacking = true"
 	Player = Cast<AMyArcher>(OtherActor);
 	if (OtherActor->IsA<AMyArcher>() && Alive) {
 		MidSwing = false;
 		Attacking = true;
-		OnGoingAttackAnim = true;
 
 		StopMovement();
 	}
@@ -139,6 +139,7 @@ void AMyEnemy::AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 void AMyEnemy::AttackEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	//Just gives the archer a headstart if the armor gets to close. starts movement after 1 second of leaving the attack area
 	if(Alive){
 		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::StartMovement, 01.0f, false);
@@ -147,6 +148,7 @@ void AMyEnemy::AttackEnd(UPrimitiveComponent* OverlappedComponent, AActor* Other
 
 void AMyEnemy::ExplosionDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	//once again the main reason hitbox component here is so that 
 	if (Alive && OtherComp->ComponentHasTag("Exploded")) {
 		DetectionArea->SetSphereRadius(2000.0f);
 		Detected = true;
@@ -155,13 +157,14 @@ void AMyEnemy::ExplosionDamage(UPrimitiveComponent* OverlappedComponent, AActor*
 }
 
 void AMyEnemy::StopMovement()
-{	
+{	//stops movement for when the armor reaches the player so that it does not continue to run toward player when reaching her
 	Speed = 0.0f;
 	MovementStopped = true;
 }
 
 void AMyEnemy::StartMovement()
 {
+	//starts movement again after being stopped
 	Speed = MaxSpeed;
 	Attacking = false;
 	MovementStopped = false;
@@ -169,16 +172,14 @@ void AMyEnemy::StartMovement()
 
 void AMyEnemy::Die()
 {
+	//feel like this function explains itself pretty well
 	Destroy();
 }
 
-void AMyEnemy::AnimEnd()
-{
-	OnGoingAttackAnim = false;
-}
 
 FVector AMyEnemy::GetPlayerLocation(UWorld* World)
 {
+	//for some reason i could no longer get player location thorugh thefirstcontrooller() thing. so i had to make this gigantic thing to get the player location
 	if (!World) {
 		return FVector::ZeroVector;
 	}
@@ -197,29 +198,27 @@ FVector AMyEnemy::GetPlayerLocation(UWorld* World)
 
 void AMyEnemy::MidSwingDelay()
 {
+	//delays the damage amount so that the archer can only lose hp every 1.5 seconds when continuously standing in the attackarea
 	MidSwing = false;
 }
 
 // Called every frame
 void AMyEnemy::Tick(float DeltaTime)
 {
+	//here is the movement part, it calculates where it has to go and goes towards the target (player)
 	Super::Tick(DeltaTime);
 	StartLocation = GetActorLocation();
 	PlayerLocation = GetPlayerLocation(GetWorld());
 	Direction = PlayerLocation - StartLocation;
 	TotalDistance = Direction.Size();
 
-	HomeDirection = HomeLocation - StartLocation;
-	HomeTotalDistance = HomeDirection.Size();
-
 	Direction.Normalize();
-	HomeDirection.Normalize();
 
 	if (Detected && CurrentDistance < TotalDistance && Alive && !MovementStopped) {
 		FVector NewLocation = GetActorLocation() + Direction * Speed * DeltaTime;
 		CurrentDistance = (NewLocation - StartLocation).Size();
 
-		//Line trace to check for ground bellow
+		//line trace to keep the enemy to the ground becuase i decided to be stupid and make my own bad movement component, when i could start out with one implemented if i pushed the right buttons but now i have comitted to this and i will cry if i ever remove it
 		FVector DownVector = FVector(0.0f, 0.0f, -5.0f);
 		FHitResult Hit;
 		FCollisionQueryParams Params;
@@ -234,18 +233,19 @@ void AMyEnemy::Tick(float DeltaTime)
 		FRotator TargetRotation = (PlayerLocation - NewLocation).Rotation() - FRotator(0.0f, 90.0f, 0.0f);
 		SetActorRotation(FRotator(0.0f, TargetRotation.Yaw, 0.0f));
 	}
-
+	//restricts the damage the archer can get
 	if (Attacking && !MidSwing) {
 		MidSwing = true;
 		Player->OnHit();
 		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::MidSwingDelay, 01.5f, false);
 	}
-
+	//keeps searching for player if it detects that the player is inside the detection area, but is behind something
 	if (Scanning) {
 		WallDetectionCheck();
 	}
 
+	//handles death logic
 	if (CurrentHealth == 0 && Alive) {
 		Alive = false;
 		DetectionArea->SetSphereRadius(0.0f);
