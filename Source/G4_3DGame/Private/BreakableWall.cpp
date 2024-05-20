@@ -2,7 +2,7 @@
 
 
 #include "BreakableWall.h"
-#include "Components/SphereComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ABreakableWall::ABreakableWall()
@@ -17,7 +17,7 @@ ABreakableWall::ABreakableWall()
 	Mesh->SetupAttachment(RootComponent);
 
 
-	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
+	CollisionComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Collision"));
 	CollisionComponent->SetupAttachment(RootComponent);
 
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ABreakableWall::Explode);

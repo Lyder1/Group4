@@ -4,8 +4,7 @@
 #include "MyEnemy.h"
 #include "Components/SphereComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Kismet/GameplayStatics.h"
-
+#include "Arrow.h"	
 
 // Sets default values
 AMyEnemy::AMyEnemy()
@@ -27,7 +26,7 @@ AMyEnemy::AMyEnemy()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	Mesh->SetupAttachment(RootComponent);
 
-	Speed = 550.0f;
+	Speed = 50.0f;
 
 	DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::OnDetectionBegin);
 	DetectionArea->OnComponentEndOverlap.AddDynamic(this, &AMyEnemy::OnDetectionEnd);
@@ -120,7 +119,6 @@ void AMyEnemy::AttackStart(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	Player = Cast<AMyArcher>(OtherActor);
 	if (OtherActor->IsA<AMyArcher>() && Alive) {
-		MidSwing = false;
 		Attacking = true;
 		OnGoingAttackAnim = true;
 
@@ -153,7 +151,7 @@ void AMyEnemy::StopMovement()
 
 void AMyEnemy::StartMovement()
 {
-	Speed = 550.0f;
+	Speed = 50.0f;
 	Attacking = false;
 	MovementStopped = false;
 }
@@ -168,38 +166,15 @@ void AMyEnemy::AnimEnd()
 	OnGoingAttackAnim = false;
 }
 
-FVector AMyEnemy::GetPlayerLocation(UWorld* World)
-{
-	if (!World) {
-		return FVector::ZeroVector;
-	}
-
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(World, 0);
-	if (PlayerController) {
-		AMyArcher* PlayerCharacter = Cast<AMyArcher>(PlayerController->GetPawn());
-		if (PlayerCharacter) {
-			PlayerLocation = PlayerCharacter->GetActorLocation();
-			return PlayerLocation; 
-		}
-	}
-	return FVector::ZeroVector;
-
-}
-
-void AMyEnemy::MidSwingDelay()
-{
-	MidSwing = false;
-}
+//OnGoingAttackAnim 
 
 // Called every frame
 void AMyEnemy::Tick(float DeltaTime)
 {
-	
 	Super::Tick(DeltaTime);
 	StartLocation = GetActorLocation();
 	PlayerLocation = GetWorld()->GetFirstPlayerController()->GetCharacter()->GetActorLocation();
 	Direction = PlayerLocation - StartLocation;
-	PlayerLocation = GetPlayerLocation(GetWorld());
 	TotalDistance = Direction.Size();
 
 	HomeDirection = HomeLocation - StartLocation;
@@ -228,11 +203,8 @@ void AMyEnemy::Tick(float DeltaTime)
 		SetActorRotation(FRotator(0.0f, TargetRotation.Yaw, 0.0f));
 	}
 
-	if (Attacking && !MidSwing) {
-		MidSwing = true;
+	if (Attacking) {
 		Player->OnHit();
-		GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &AMyEnemy::MidSwingDelay, 01.5f, false);
 	}
 
 	if (Scanning) {

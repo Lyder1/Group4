@@ -7,9 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "Arrow.h"
 #include "InteractionInterface.h"
-#include "Engine/World.h"
 #include "TimerManager.h"
-
 
 #include "MyArcher.generated.h"
 
@@ -53,6 +51,7 @@ public:
 
 
 	// VARIABLES
+
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* MoveAnimation;
@@ -127,6 +126,10 @@ public:
 	void Interact();
 
 	void DamageDelay();
+
+	void AttackDelay();
+
+	void PlayFireAnimation();
 
 	UFUNCTION()
 	void FireArrow();
