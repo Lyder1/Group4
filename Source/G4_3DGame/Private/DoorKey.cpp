@@ -36,7 +36,7 @@ void ADoorKey::Tick(float DeltaTime)
 void ADoorKey::InteractWithThis() 
 {
 	IsHeld = true;
-	Destroy();
+	KeyMesh->SetVisibility(false);
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Emerald, TEXT("Picked up key"));
 }
 
