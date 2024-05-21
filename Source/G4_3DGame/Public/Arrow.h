@@ -44,8 +44,9 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
 	UStaticMeshComponent* ArrowMesh;
 
-	/*UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
-	UStaticMeshComponent* NewArrowMesh;*/
+
+	// FUNCTIONS
+
 
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

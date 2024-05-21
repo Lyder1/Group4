@@ -11,15 +11,10 @@ AArrow::AArrow()
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSceneComponent"));
-	// Use a sphere as a simple collision representation.
+
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
-	// Set the sphere's collision profile name to "Projectile".
-	//CollisionComponent->BodyInstance.SetCollisionProfileName(TEXT("Projectile"));
-	// Set the sphere's collision radius.
 	CollisionComponent->InitSphereRadius(15.0f);
-	// Set the root component to be the collision component.
 	RootComponent = CollisionComponent;
-	
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AArrow::OnHit);
 
 	// Use this component to drive this projectile's movement.
@@ -29,20 +24,13 @@ AArrow::AArrow()
 	ArrowMovementComponent->MaxSpeed = 10000.0f;
 	ArrowMovementComponent->bRotationFollowsVelocity = true;
 	ArrowMovementComponent->bShouldBounce = false;
-	//ArrowMovementComponent->Bounciness = 0.3f;
 	ArrowMovementComponent->ProjectileGravityScale = 1.0f;
 
 	ArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow Mesh"));
 	ArrowMesh->SetupAttachment(CollisionComponent);
 
-
 	//lifespan of arrow after being fired
 	InitialLifeSpan = 3.0f;
-
-	/*if (!NewArrowMesh) {
-		NewArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow Mesh"));
-		NewArrowMesh->SetupAttachment(ArrowMesh);
-	}*/
 }
 
 // Called when the game starts or when spawned
@@ -61,11 +49,13 @@ void AArrow::Tick(float DeltaTime)
 void AArrow::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//checks if the detected components is eiter the arrow, the enemy detection area or the enemy attack area
-	if (OtherComp->GetOwner() == this || OtherComp->ComponentHasTag("DetectionArea") || (OtherComp->ComponentHasTag("AttackArea"))) {
+	if (OtherComp->GetOwner() == this || OtherComp->ComponentHasTag("DetectionArea") || (OtherComp->ComponentHasTag("AttackArea"))) 
+	{
 		return;
 	}
 	//checks if the hit component is the Enemy hitbox by looking for the tag "hitbox". it calls Enemy OnHit() function if the component has the right tag and then destroys itself
-	if (OtherComp->ComponentHasTag("HitBox")) {
+	if (OtherComp->ComponentHasTag("HitBox")) 
+	{
 		AMyEnemy* Enemy = Cast<AMyEnemy>(OtherActor);
 		Enemy->OnHit();
 		Destroy();
@@ -77,6 +67,6 @@ void AArrow::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 
 void AArrow::FireInDirection(const FVector& ShootDirection, float ChargeRate)
 {
-	ArrowMovementComponent->Velocity = ShootDirection * ChargeRate;
+	ArrowMovementComponent->Velocity = ShootDirection * ChargeRate; // fetches the Charge Rate from the Archer class and muliplies it with the projectiles velocity
 }
 

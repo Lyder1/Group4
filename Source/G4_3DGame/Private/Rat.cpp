@@ -40,6 +40,7 @@ void ARat::Move(const FInputActionValue& Value)
 		FVector Forward = GetActorForwardVector();
 		FVector Right = GetActorRightVector();
 
+		// Makes the Rat face the direction of the input rather than the direction of the camera
 		FVector Direction = (Forward * MovementVector.Y) + (Right * MovementVector.X);
 		Direction.Z = 0.0f;
 

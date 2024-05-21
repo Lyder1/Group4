@@ -34,16 +34,19 @@ void ADoor::Tick(float DeltaTime)
 
 void ADoor::InteractWithThis()
 {
-	if (LinkedKey && LinkedKey->CheckIfHeld()) {
+	if (LinkedKey && LinkedKey->CheckIfHeld()) //checks if LinkedKey exists and if it is held by the player
+	{
 		LinkedKey->IsHeld = true;
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Emerald, TEXT("Door unlocked"));
-		if (IsOpened) {
+		if (IsOpened)
+		{
 			AddActorLocalOffset(MoveCloseDoor, false, 0, ETeleportType::None);
 			AddActorLocalRotation(CloseDoor, false, 0, ETeleportType::None);
 			
 			IsOpened = false;
 		}
-		else {
+		else 
+		{
 			AddActorLocalRotation(OpenDoor, false, 0, ETeleportType::None);
 			AddActorLocalOffset(MoveOpenDoor, false, 0, ETeleportType::None);
 			

@@ -82,6 +82,7 @@ public:
 
 	// INPUT ACTIONS AND IMC
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	bool IsCharging = false;
 
@@ -111,6 +112,7 @@ public:
 
 
 	// FUNCTIONS
+
 
 	void Move(const FInputActionValue& Value);
 

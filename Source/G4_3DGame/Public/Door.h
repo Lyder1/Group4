@@ -45,11 +45,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variable")
 	int DoorIndex;
 
+	// Creating a linked key that unlocks this specific instance of door
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door | key")
-	ADoorKey* LinkedKey;
-
-	/*UPROPERTY(EditDefaultsOnly, Category = "Door | Key")
-	TSubclassOf<class ADoorKey> LinkedKey;*/
+	ADoorKey* LinkedKey; 
 
 
 	// FUNCTIONS
@@ -64,5 +62,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Interact function from Interaction Interface
 	virtual void InteractWithThis() override;
 };

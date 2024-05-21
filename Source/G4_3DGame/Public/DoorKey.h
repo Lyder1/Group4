@@ -54,6 +54,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Interact function from Interaction Interface
 	virtual void InteractWithThis() override;
 
 };

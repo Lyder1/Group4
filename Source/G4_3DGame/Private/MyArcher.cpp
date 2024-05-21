@@ -30,7 +30,7 @@ AMyArcher::AMyArcher()
 	ArcherSpringArm->bUsePawnControlRotation = true;
 	ArcherSpringArm->bEnableCameraLag = true;
 	ArcherSpringArm->TargetArmLength = 300.0f;
-	ArcherSpringArm->SocketOffset.Set(0, 70.0f, 50.0f);
+	ArcherSpringArm->SocketOffset.Set(0.0f, 70.0f, 50.0f);
 
 	InteractBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Archer Interact Detection Box"));
 	InteractBox->SetupAttachment(RootComponent);
@@ -118,20 +118,7 @@ void AMyArcher::Interact()
 
 void AMyArcher::ChargeArrow()
 {
-	/*for (int i = 0; i < 100; i++) 
-	{
-		ChargeRate *= i;
-	}*/
-
-	//while (1) 
-	//{
-	//	ChargeRate += 100;
-	//}
-
-	ArcherSpringArm->TargetArmLength = 100.0f;
-	ArcherSpringArm->SocketOffset.Set(0, 70.0f, 70.0f);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, TEXT("Charging..."));
-	ChargeRate += 100;
+	ChargeRate += 100; //increases the chargerate by 100 every tick while the function is active
 	IsCharging = true;
 }
 
@@ -148,9 +135,9 @@ void AMyArcher::FireArrow()
 				GetActorEyesViewPoint(CameraLocation, CameraRotation);
 
 				// Set ArrowOrigin to spawn projectiles slightly in front of the camera.
-				ArrowOrigin.Set(100.0f, 0.0f, -50.0f);
+				ArrowOrigin.Set(80.0f, 30.0f, 30.0f);
 
-				// Transform MuzzleOffset from camera space to world space.
+				// Transform OriginLocation from camera space to world space.
 				FVector OriginLocation = CameraLocation + FTransform(CameraRotation).TransformVector(ArrowOrigin);
 
 				// Skew the aim to be slightly upwards.
@@ -160,7 +147,6 @@ void AMyArcher::FireArrow()
 				UWorld* World = GetWorld();
 				if (World)
 				{
-
 					FActorSpawnParameters SpawnParams;
 					SpawnParams.Owner = this;
 					SpawnParams.Instigator = GetInstigator();
@@ -170,13 +156,10 @@ void AMyArcher::FireArrow()
 
 					if (Projectile)
 					{
-						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("Shots fired"));
 						// Set the projectile's initial trajectory.
 						FVector LaunchDirection = OriginRotation.Vector();
-						Projectile->FireInDirection(LaunchDirection, ChargeRate);
+						Projectile->FireInDirection(LaunchDirection, ChargeRate); //projectile speed is multiplied with chargerate
 						ChargeRate = 1.0f;
-						ArcherSpringArm->TargetArmLength = 300.0f;
-						ArcherSpringArm->SocketOffset.Set(0, 70.0f, 50.0f);
 						Ammo--;
 					}
 
@@ -188,7 +171,6 @@ void AMyArcher::FireArrow()
 		}
 		
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("No Ammo"));
 		ChargeRate = 1.0f;
 	}
 
@@ -210,29 +192,13 @@ void AMyArcher::InputInteract()
 {
 	if (Interface)
 	{
-		Interface->InteractWithThis();
+		Interface->InteractWithThis(); //calls the function of the same name in the object it interacts with
 	}
 }
 
 // Called when the game starts or when spawned
 void AMyArcher::BeginPlay()
 {
-	//if (PlayerHealth > 0) {
-	//	Super::BeginPlay();
-
-	//	// Adding the Input Mapping Context
-	//	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	//	{
-	//		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-	//		{
-	//			Subsystem->AddMappingContext(IMC, 0);
-	//		}
-	//	}
-	//}
-	//else {
-	//	//Super::EndPlay();
-	//}
-
 	Super::BeginPlay();
 
 	// Adding the Input Mapping Context
@@ -254,7 +220,6 @@ void AMyArcher::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (PlayerHealth <= 0) {
 		Dead = true;
-		//Die();
 	}
 }
 
@@ -275,7 +240,6 @@ void AMyArcher::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(LoadAction, ETriggerEvent::Triggered, this, &AMyArcher::InputLoad);
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &AMyArcher::FireArrow);
-		//EnhancedInputComponent->BindAction(ChargeAction, ETriggerEvent::Ongoing, this, &AMyArcher::ChargeArrow);
 		EnhancedInputComponent->BindAction(ChargeAction, ETriggerEvent::Triggered, this, &AMyArcher::ChargeArrow);
 
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &AMyArcher::InputInteract);
